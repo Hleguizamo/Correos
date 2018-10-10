@@ -1,0 +1,27 @@
+provedores:
+    path:     /
+    defaults: { _controller: WABackendBundle:Proveedor:index }
+    
+provedores_xml:
+    path:    /xml
+    defaults: { _controller: WABackendBundle:Proveedor:xml}
+
+provedores_nuevo:
+    path:    /nuevo
+    defaults: { _controller: WABackendBundle:Proveedor:new}
+
+provedores_editar:
+    path:    /editar
+    defaults: { _controller: WABackendBundle:Proveedor:edit}
+    options:
+      expose: true
+
+provedores_eliminar:
+    path:    /eliminar
+    defaults: { _controller: WABackendBundle:Proveedor:delete}
+    options:
+      expose: true
+
+provedores_exportar:
+    path:    /exportar
+    defaults: { _controller: WABackendBundle:Proveedor:exportar}

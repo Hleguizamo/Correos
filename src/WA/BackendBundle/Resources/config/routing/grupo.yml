@@ -1,0 +1,121 @@
+grupo:
+    path:     /
+    defaults: { _controller: WABackendBundle:Grupo:index }
+    
+grupo_new:
+    path:     /new
+    defaults: { _controller: WABackendBundle:Grupo:new }
+    
+grupo_edit:
+    path:     /{id}/edit
+    defaults: { _controller: WABackendBundle:Grupo:edit }
+    options:
+        expose: true
+        
+grupo_xml:
+    path:     /xml
+    defaults: { _controller: WABackendBundle:Grupo:xml }
+    options:
+        expose: true
+        
+grupo_destinatarios:
+    path:     /destinatariosGrupo
+    defaults: { _controller: WABackendBundle:Grupo:destinatarios }
+    options:
+        expose: true
+        
+grupo_asociadoXml:
+    path:     /asociadoDestinatarioXml
+    defaults: { _controller: WABackendBundle:Grupo:asociadosXml }
+    options:
+        expose: true
+
+grupo_asociadoEliminar:
+    path:     /asociadoDestinatarioEliminar
+    defaults: { _controller: WABackendBundle:Grupo:eliminarAsociado }
+    options:
+        expose: true
+        
+grupo_asociadoAgregar:
+    path:     /asociadoDestinatarioAgregar
+    defaults: { _controller: WABackendBundle:Grupo:agregarAsociado }
+    options:
+        expose: true
+        
+grupo_proveedorContatosXml:
+    path:     /proveedorContactoDestinatarioXml
+    defaults: { _controller: WABackendBundle:Grupo:proveedorContactosXml }
+    options:
+        expose: true
+        
+grupo_proveedorContactoEliminar:
+    path:     /proveedorContactoDestinatarioEliminar
+    defaults: { _controller: WABackendBundle:Grupo:eliminarProveedorContacto }
+    options:
+        expose: true
+        
+grupo_proveedorContactoAgregar:
+    path:     /proveedorContactoDestinatarioAgregar
+    defaults: { _controller: WABackendBundle:Grupo:agregarProveedorContacto }
+    options:
+        expose: true
+        
+grupo_proveedorXml:
+    path:     /proveedorDestinatarioXml
+    defaults: { _controller: WABackendBundle:Grupo:proveedoresXml }
+    options:
+        expose: true
+
+grupo_proveedorAsignadoXml:
+    path:     /proveedorAsignadoXml
+    defaults: { _controller: WABackendBundle:Grupo:proveedoresAgregadosXml }
+    options:
+        expose: true
+
+grupo_asignado:
+    path:     /asignado
+    defaults: { _controller: WABackendBundle:Grupo:asignado }
+    options:
+        expose: true
+        
+grupo_proveedorEliminar:
+    path:     /proveedorDestinatarioEliminar
+    defaults: { _controller: WABackendBundle:Grupo:eliminarProveedor }
+    options:
+        expose: true
+        
+grupo_proveedorAgregar:
+    path:     /proveedorDestinatarioAgregar
+    defaults: { _controller: WABackendBundle:Grupo:agregarProveedor }
+    options:
+        expose: true
+        
+grupo_cargaArchivo:
+    path:     /cargaArchivo
+    defaults: { _controller: WABackendBundle:Grupo:cargaArchivo }
+    options:
+        expose: true
+
+grupo_cargaArchivoAsociado:
+    path:     /cargaArchivoAsociado
+    defaults: { _controller: WABackendBundle:Grupo:cargaArchivoAsociado }
+    options:
+        expose: true
+        
+grupo_descargaDestinatarios:
+    path:     /descargaDestinatarios
+    defaults: { _controller: WABackendBundle:Grupo:descargaDestinatarios }
+    options:
+        expose: true
+        
+grupo_procesarArchivo:
+    path:     /procesarArchivo
+    defaults: { _controller: WABackendBundle:Grupo:procesarArchivo }
+    options:
+        expose: true
+
+grupo_procesarArchivoAsociados:
+    path:     /procesarArchivoAsociados
+    defaults: { _controller: WABackendBundle:Grupo:procesarArchivoAsociados }
+    options:
+        expose: true

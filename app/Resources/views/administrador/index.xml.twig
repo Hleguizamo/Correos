@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rows>
+  <page>{{ pagina }}</page>
+  <total>{{ maxPagina }}</total>
+  <records>{{ numRegistros }}</records>
+  {% for entity in entities %}
+  <row id="{{ entity.id }}">
+    <cell><![CDATA[{{ entity.id }}]]></cell>
+    <cell><![CDATA[{{ entity.nombre|raw }}]]></cell>
+    <cell><![CDATA[{{ entity.usuario }}]]></cell>
+    <cell><![CDATA[{{ entity.email }}]]></cell>
+    <cell><![CDATA[{% if entity.activo ==1 %}Activo{% else %}Inactivo{% endif %}]]></cell>
+    <cell><![CDATA[ {{ entity.fechaCreado | date('Y-m-d H:i:s') }} ]]></cell>
+  </row>
+  {% endfor %}
+</rows>
+

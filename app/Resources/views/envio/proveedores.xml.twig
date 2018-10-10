@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rows>
+    <page>{{ pagina }}</page>
+    <total>{{ maxPagina }}</total>
+    <records>{{ numRegistros }}</records>
+    {% for entity in entities %}
+        {% if integrantesGrupo[entity.id] is defined %}
+            <row id="{% if entity.contactoId == null  %}{{entity.id}}{% else %}{{ entity.contactoId }}{% endif %}">
+                <cell><![CDATA[<i class="selectProveedor fa {% if entity.id %}fa-check text-success{% else %}fa-exclamation-circle text-warning{% endif %}" aria-hidden="true" id="asignarproveedor_{{ entity.id }}"></i>]]></cell>
+                <cell><![CDATA[<i id="reenviarProveedor_{{ entity.id }}" title="{{integrantesGrupo[entity.id]['integrante']}}" class="fa fa-reply-all icon-small enlaceE imagen" data-tooltip title="Reenviar mensaje a proveedor y recibir copia."></i>]]></cell>
+                <cell><![CDATA[<strong id="leidosProveedor_{{entity.id}}" title="0" class="mensajesLeidosProveedor">{% if entity.contactoId == null  %}{{entity.id|numeroleido}}{% else %}{{ entity.contactoId|numeroleido(1) }}{% endif %}</strong>]]></cell>
+                <cell><![CDATA[{{entity.nit}} ]]></cell>
+                <cell><![CDATA[{{entity.codigo}} ]]></cell>
+                <cell><![CDATA[{{entity.nombre}} ]]></cell>
+                <cell><![CDATA[{% if entity.contactoId == null  %}{{entity.representanteLegal}}{% endif %}]]></cell>
+                <cell><![CDATA[{% if entity.contactoId == null  %}{{entity.emailRepresentanteLegal}}{% endif %}]]></cell>
+                <cell><![CDATA[{{entity.nombreContacto}}]]></cell>
+                <cell><![CDATA[{{entity.email}}]]></cell>
+                <cell><![CDATA[{%if integrantesGrupo[entity.id]['fechaEnvio']%}{{integrantesGrupo[entity.id]['fechaEnvio']|date('Y-m-d H:i:s')}}{%endif%} ]]></cell>
+            </row>
+        {% endif %}
+    {% endfor %}
+</rows>

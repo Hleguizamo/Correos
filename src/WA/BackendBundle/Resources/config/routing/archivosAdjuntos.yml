@@ -1,0 +1,15 @@
+archivos_adjuntos_csv:
+    path:  /csv
+    defaults: { _controller: WABackendBundle:ArchivosAdjuntos:csv }
+
+archivos_adjuntos_otros:
+    path:  /otros
+    defaults: { _controller: WABackendBundle:ArchivosAdjuntos:otros }
+
+archivos_adjuntos_listar:
+    path:  /listar
+    defaults: { _controller: WABackendBundle:ArchivosAdjuntos:listar }
+
+archivos_adjuntos_eliminar:
+    path:  /eliminar
+    defaults: { _controller: WABackendBundle:ArchivosAdjuntos:eliminar }

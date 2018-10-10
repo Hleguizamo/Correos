@@ -1,0 +1,99 @@
+envio:
+    path:     /
+    defaults: { _controller: WABackendBundle:Envio:index }
+    
+envio_xml:
+    path:    /xml
+    defaults: { _controller: WABackendBundle:Envio:xml}
+
+envio_new:
+    path:    /new
+    defaults: { _controller: WABackendBundle:Envio:new}
+    options:
+        expose:    true
+
+envio_edit:
+    path: /{id}/edit
+    defaults: { _controller: WABackendBundle:Envio:edit }
+    options:
+        expose: true
+        
+envio_destinatarios:
+    path:  /destinatarios
+    defaults: { _controller: WABackendBundle:Envio:destinatarios }        
+
+envio_pre_visualizacion:
+    path: /{id}/pre_visualizacion
+    defaults: {_controller: WABackendBundle:Envio:preVisualizacion}
+    options:
+        expose:  true
+
+envio_delete:
+    path: /{id}/delete
+    defaults: { _controller: WABackendBundle:Envio:delete }
+    options:
+        expose: true
+
+envio_enviar:
+    path:  /enviar
+    defaults: { _controller: "WABackendBundle:Envio:enviar"}
+
+envio_proveedoresXml:
+    path:  /proveedoresXml
+    defaults: { _controller: WABackendBundle:Envio:proveedoresXml }  
+    
+envio_agregarProveedor:
+    path:  /agregarProveedor
+    defaults: { _controller: WABackendBundle:Envio:agregarProveedor }
+  
+envio_eliminarProveedor:
+    path:  /eliminarProveedor
+    defaults: { _controller: WABackendBundle:Envio:eliminarProveedor }
+    
+envio_vistaPrevia:
+    path:  /vistaPrevia
+    defaults: { _controller: WABackendBundle:Envio:vistaPrevia }
+    
+envio_asociadosXml:
+    path:  /asociadosXml
+    defaults: { _controller: WABackendBundle:Envio:asociadosXml }  
+    
+envio_agregarAsociado:
+    path:  /agregarAsociado
+    defaults: { _controller: WABackendBundle:Envio:agregarAsociado }
+    
+envio_eliminarAsociado:
+    path:  /eliminarAsociado
+    defaults: { _controller: WABackendBundle:Envio:eliminarAsociado }
+
+envio_envio_lectura:
+    path:  /envio_lectura
+    defaults: { _controller: "WABackendBundle:Envio:lectura" }
+    
+envio_vistaPreviaMensajes:
+    path:  /vistaPreviaMensajes
+    defaults: { _controller: WABackendBundle:Envio:vistaPreviaMensajes }
+    
+envio_leidosProveedor:
+    path:  /envio_leidos_proveedor
+    defaults: { _controller: WABackendBundle:Envio:leidosProveedor }
+  
+envio_leidosProveedorXml:
+    path:  /leidosProveedorXml
+    defaults: { _controller: WABackendBundle:Envio:leidosProveedorXml }
+    
+envio_xls:
+    path:  /xls
+    defaults: { _controller: WABackendBundle:Envio:xls }
+
+envio_xlsLeidosAsociados:
+    path:  /xlsLeidosAsociados
+    defaults: { _controller: WABackendBundle:Envio:xlsLeidosAsociados }
+    options:
+        expose:    true
+
+envio_xlsLeidosProveedor:
+    path:  /xlsLeidosProveedor
+    defaults: { _controller: WABackendBundle:Envio:xlsLeidosProveedor }
+    options:
+        expose:    true

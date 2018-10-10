@@ -1,0 +1,43 @@
+administrador_homepage:
+    path:     /
+    defaults: { _controller: 'WABackendBundle:Default:login' }
+    
+administrador:
+    prefix:     /default
+    resource: "@WABackendBundle/Resources/config/routing/default.yml"
+
+configuracion:
+    prefix:     /configuracion
+    resource: "@WABackendBundle/Resources/config/routing/configuracion.yml"
+
+usuarios:
+    prefix:     /usuarios
+    resource: "@WABackendBundle/Resources/config/routing/usuarios.yml"
+
+administradores:
+    prefix:    /administradores
+    resource: "@WABackendBundle/Resources/config/routing/administradores.yml"
+
+cliente:
+    prefix:    /cliente
+    resource: "@WABackendBundle/Resources/config/routing/cliente.yml"
+
+envio:
+    prefix:    /envio
+    resource: "@WABackendBundle/Resources/config/routing/envio.yml"
+
+archivos_adjuntos:
+    prefix:    /archivos_adjuntos
+    resource: "@WABackendBundle/Resources/config/routing/archivosAdjuntos.yml"
+    
+grupo:
+    prefix:    /grupo
+    resource: "@WABackendBundle/Resources/config/routing/grupo.yml"
+
+proveedores:
+    prefix:    /proveedor
+    resource: "@WABackendBundle/Resources/config/routing/proveedor.yml"
+
+contactos_proveedor:
+    prefix:    /contactoProveedor
+    resource: "@WABackendBundle/Resources/config/routing/contactosProveedor.yml"

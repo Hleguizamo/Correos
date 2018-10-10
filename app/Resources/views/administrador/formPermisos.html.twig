@@ -1,0 +1,66 @@
+
+<div class="row">
+	 <form class="form-horizontal" id="frmPermisos">
+		<table class="table table-condensed table-striped">
+			<tr>
+				<td colspan="2" >
+					<strong></strong>
+				</td>
+			</tr>
+
+			{% for id,menu in menus %}
+				<tr>
+					<td>{{ menu }}</td>
+					<td>
+						<select class="form-control" name='permisos[{{id}}]'>
+							<option value="0" {% if permisos[id] is defined %}{% if permisos[id] == 0 %}selected{% endif %}{% endif %} >Bloqueo.</option>
+							<option value="1" {% if permisos[id] is defined %}{% if permisos[id] == 1 %}selected{% endif %}{% endif %} >Control total.</option>
+							<option value="2" {% if permisos[id] is defined %}{% if permisos[id] == 2 %}selected{% endif %}{% endif %} >Edición.</option>
+							<option value="3" {% if permisos[id] is defined %}{% if permisos[id] == 3 %}selected{% endif %}{% endif %} >Sólo lectura.</option>
+						</select>
+					</td>
+				</tr>
+			{% endfor %}
+
+		</table>
+
+		<div class="form-actions text-center" style="margin-top:15px; ">
+      <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o"></i>GUARDAR</button>
+    </div>
+
+	</form>	
+</div>
+<script type="text/javascript">
+	$().ready(function(){
+
+		$('#frmPermisos').submit(function(){
+
+			$.ajax({
+				url:'{{ path("administradores_edit_permisos", {id:administrador.id} ) }}',
+				method:'post',
+				data:$('#frmPermisos').serialize(),
+				beforeSend:function(){
+					noty({layout:'center',text:'<strong>Cargando. Por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']}); 
+				},
+				statusCode:{
+					200:function(){
+						$.noty.closeAll();
+						AlertaPersonalizable('Permisos actualizados correctametne.',1200,'information');
+						$('#myModal').modal('toggle');
+					},
+					500:function(){
+						$.noty.closeAll();
+						MensajeConfirmacionError('Al parecer ocurrio un error inesperado. Por favor recarque la página e intentelo nuevamente. ');
+					}
+				}
+
+			});
+
+			return false;
+
+		});
+
+	});
+</script>
+
+

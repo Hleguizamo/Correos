@@ -1,0 +1,119 @@
+<script type="text/javascript">
+    jQuery().ready(function (){
+        $.jgrid.defaults.width = 780;
+        $.jgrid.defaults.responsive = true;
+        $.jgrid.defaults.styleUI = 'Bootstrap';
+        jQuery("#Grilla").jqGrid({
+            url: '{{ path('grupo_xml') }}',
+            datatype: "xml",
+            colNames:['id','TÍTULO', 'FECHA CREADO', 'DESCRIPCIÓN','CLASIFICACIÓN','INTEGRANTES'],
+            colModel:[
+                    {name:'id',index:'g.id', hidden: true},
+                    {name:'nombre', index:'g.nombre'},
+                    {name:'fecha',index:'g.fechaCreado', sorttype:'int', width:60},
+                    {name:'descripcion',index:'g.descripcion'},
+                    {name:'clasificacion', index:'g.clasificacion',width:40,stype:'select',searchoptions:{value:"No Aplica:No Aplica;Droguerias:Droguerías;Asociados:Asociados",sopt:['eq','ne']}},
+                    {name:'integrantes',index:'g.integrantes', sorttype:'int',width:40 }
+            ],
+            rowNum: 100,
+            autowidth: true,
+            rowList: [100,200,300,400],
+            pager: '#pGrilla',
+            sortname: 'g.id',
+            viewrecords: true,
+            sortorder: "DESC",
+            height:($(window).height()-227)
+            {#{% if permiso_modulo <=2 %}
+                ,ondblClickRow: function(ids) {
+                    var data = jQuery(this).getRowData(ids);
+                    //Cargando();
+                    $('#dialog').empty().load('{{ path('grupo') }}'+data.id +'/edit').dialog({ 
+                       title: 'Editar Grupo',
+                       width: '450',
+                       modal: true,
+                       close: function(event, ui){ $(this).dialog("destroy"); }
+                    });
+                    $('#dialog').dialog('open');
+                }
+            {%endif%}#}
+        }).navGrid('#pGrilla',{edit:false,add:false,del:false},{},{},{},{multipleSearch:true});
+        {#$('#dialog').dialog({autoOpen:false,modal:true});        
+    {% if permiso_modulo <= 3 %}#}
+        $("#Grilla").jqGrid('navButtonAdd','#pGrilla',{ caption:'<span class="text-success"><i class="fa fa-plus-square-o"></i> Nuevo<span>',title:"Nuevo Grupo",buttonicon:"none", onClickButton:function(){
+                noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+                $('#tituloModal').html('Nuevo Grupo');
+                $('#contenidoModal').load('{{path('grupo_new')}}', function(){
+                    $('#modal').modal('show');
+                    $.noty.closeAll();
+                });
+            }
+        });
+    {#{% endif %}
+    {% if permiso_modulo <= 3 %}#}
+        $("#Grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-primary"><i class="fa fa-pencil"></i> Editar<span>',title:"Editar Grupo seleccionado",buttonicon:"none", onClickButton:function(){
+                var gsr = $("#Grilla").getGridParam('selrow');
+                if(gsr){
+                    data = $("#Grilla").getRowData(gsr);
+                    noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+                    $('#tituloModal').html('Editar Grupo');
+
+                    $('#contenidoModal').load(Routing.generate('grupo_edit',{"id": data.id }), function(){
+                        $('#modal').modal('show');
+                        $.noty.closeAll();
+                    });
+                }else{
+                    MensajeConfirmacion('Seleccione la fila a editar.');
+                }
+            }
+        });
+    {#{% endif %}
+    {% if permiso_modulo <= 3 %}#}
+        $("#Grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-primary"><i class="fa fa-users"></i> Agregar Destinatarios <span>',title:"Asignar destinatarios al Grupo",buttonicon:"ui-icon-person",onClickButton:function(){
+            var gsr = $("#Grilla").jqGrid('getGridParam','selrow');
+            if(gsr){
+                noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+                idGrupo = $("#Grilla").getRowData(gsr);
+                window.location.href = '{{path('grupo_destinatarios')}}?idGrupo='+idGrupo.id;
+            }else{
+                MensajeConfirmacion("Seleccione el grupo para asignarles usuarios.");
+            }
+        }});
+    {#{% endif %} #}
+    jQuery("#Grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-primary"><i class="fa fa-download"></i> Descargar XLS <span>', title: "Descargar archivo con destinatarios.",buttonicon:"ui-icon-disk", onClickButton:function(){
+            var gsr = $("#Grilla").jqGrid('getGridParam','selrow');
+                if(gsr){
+                    idGrupo = gsr;
+                    data = $("#Grilla").getRowData(gsr);
+                    window.open('{{ path('grupo_descargaDestinatarios') }}?grupoId='+idGrupo+'&clasificacion='+data.clasificacion);
+                }else{
+                    MensajeConfirmacion("Seleccione el grupo del cual quiere descargas los destinatarios.");
+                }
+            }
+        });
+    {% if app.session.get('id_usuario') == 5 %}
+        jQuery("#Grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-primary"><i class="fa fa-eye"></i> Ver Asignados <span>', title: "Ver Destinatarios.",buttonicon:"ui-icon-disk", onClickButton:function(){
+                var gsr = $("#Grilla").jqGrid('getGridParam','selrow');
+                    if(gsr){
+                        idGrupo = gsr;
+                        data = $("#Grilla").getRowData(gsr);
+                        noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+                        window.location.href = '{{ path('grupo_asignado') }}?grupoId='+idGrupo;
+                    }else{
+                        MensajeConfirmacion("Seleccione el grupo del cual quiere descargas los destinatarios.");
+                    }
+                }
+        });
+    {% endif %}
+        
+    });
+    
+
+    function ConsultaActualGrupo(){
+    var pd =$("#Grilla").getGridParam("postData");var r="";var control=0;
+    $.each(pd,function(i){
+        if(control>0)r+="&";
+        r+=i+"="+pd[i];control++;
+    });
+    return r;}
+    function reloadGridGrupos(){jQuery("#Grilla").trigger("reloadGrid");}
+</script>

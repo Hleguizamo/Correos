@@ -1,0 +1,11 @@
+configuracion:
+    path:     /
+    defaults: { _controller: WABackendBundle:Configuracion:index }
+
+configuracion_edit:
+    path:     /{configuracion}/edit
+    defaults: { _controller: WABackendBundle:Configuracion:edit }
+
+configuracion_new:
+    path:     /new
+    defaults: { _controller: WABackendBundle:Configuracion:new }

@@ -1,0 +1,213 @@
+<script type="text/javascript">
+    jQuery().ready(function (){
+        jQuery("#GrillaProveedores").jqGrid({
+            styleUI : 'Bootstrap',
+            url: '{{ path('envio_proveedoresXml') }}?envioId={{envioId}}',
+            datatype: "xml",
+            colModel:[
+                    {label:' ',name:'asignado', index:'asignado', width: 20, search:false, align:'center'},
+                    {label:'REENVIAR',name:'reenvios', index:'ci.reenviado', width: 20, search:false, align:'center'},
+                    {label:'LEIDOS',name:'envios', index:'ci.enviado', width: 20, search:false,sortable:false, align:'center'},
+                    {label:'NIT',name:'nit', index:'p.nit',width:40},
+                    {label:'CODIGO',name:'codigo', index:'p.codigo',width:40},
+                    {label:'EMPRESA',name:'empresa', index:'p.nombre'},
+                    {label:'NOMBRE REPRESENTANTE',name:'representante', index:'p.representanteLegal'},
+                    {label:'EMAIL REPRESENTANTE',name:'representanteEmail', index:'p.emailRepresentanteLegal'},
+                    {label:'NOMBRE',name:'nombre', index:'c.nombreContacto'},
+                    {label:'EMAIL',name:'email', index:'c.email'},
+                    {label:'FECHA ENVIO',name:'fechaEnvio', search:false,sortable:false, index:'fechaEnvio' }
+            ],
+            rowNum: 100,
+            width: $(window).width() - 10,
+            rowList: [100,200,300,400],
+            pager: '#pGrillaProveedores',
+            sortname: 'p.id',
+            viewrecords: true,
+            sortorder: "DESC",
+            height:($(window).height()-250),
+            toolbar: [true,'bottom'],
+            ondblClickRow: function(ids) {
+                
+                var data = jQuery(this).getRowData(ids);
+                            
+                noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+                //
+                $('#idTituloModalProveedores').empty().html('Envio para el destinatario [<span class="text-info"><b>'+data.empresa+'</b> => '+data.nombre+' - '+data.email +'</span>]');
+
+                $('#idBodyModalProveedores').empty().load('{{path('envio_vistaPreviaMensajes')}}?Tipo=proveedor&tipoGrupo={{tipoGrupo}}&envioId={{envioId}}&destinatarioId='+ids, function(){
+                    $("#modalLg").modal('show');
+                    $.noty.closeAll();
+                });
+                
+            },
+            loadComplete: function(){
+                
+                $('.selectProveedor').click(function(){
+                    var id = $(this).attr('id').split('_')[1];
+                    var icon = $(this);
+                    icon.addClass('fa-circle-o-notch fa-spin');
+                    if(icon.hasClass( "text-warning" )){
+                       $.post("{{ path('envio_agregarProveedor') }}",{ envioId:{{ envioId }}, proveedorId: id },function(data){
+                           $('#t_GrillaProveedores').html('El Proveedor se ha agregado con exito a el grupo.');
+                           icon.removeClass('fa-exclamation-circle text-warning fa-circle-o-notch fa-spin');
+                           icon.addClass('fa-check text-success');
+                       }, "json");
+                    }else{
+                       $.post("{{ path('envio_eliminarProveedor') }}", { envioId:{{ envioId }}, proveedorId: id },function(data){
+                           $('#t_GrillaProveedores').html('El Proveedor se ha eliminado del grupo con exito.');
+                           icon.removeClass('fa-check text-success fa-circle-o-notch fa-spin');
+                           icon.addClass('fa-exclamation-circle text-warning');
+                       }, "json");
+                    }
+
+                    {#var id = $(this).attr('id').split('_')[1];
+                    var image = $(this);
+                    image.attr("src", "/images/ajax-loader.gif");
+                    if(this.alt=='agregar'){
+                        
+                       $.ajax({ 
+                            url: "{{ path('envio_agregarProveedor') }}",
+                            type: 'post',
+                            data: {envioId:{{envioId}}, proveedorId: id},
+                            dataType: 'json',
+                            success: function(data){
+                                $.noty.closeAll();
+                                
+                                $('#t_GrillaProveedores').html('El Contacto del Proveedor se activo para recibir copia del correo.');
+                                //jQuery("#grilla").jqGrid('setRowData',{{envioId}},{integrantes:data.integrantes});
+                                //$('#t_GrillaProveedores').effect('pulsate');
+                                image.attr("alt", "quitar");
+                                image.attr("src", "/images/tick.png");
+                            }
+                        }); 
+                        
+
+                    }else{
+                        
+                        $.ajax({ 
+                            url: "{{ path('envio_eliminarProveedor') }}",
+                            type: 'post',
+                            data: {envioId:{{envioId}}, proveedorId: id},
+                            dataType: 'json',
+                            success: function(data){
+                                $.noty.closeAll();
+                                
+                                $('#t_GrillaProveedores').html('Se cancelo la copia del correo del Contacto del Proveedor.');
+                                //jQuery("#grilla").jqGrid('setRowData',{{envioId}},{integrantes:data.integrantes});
+                                //$('#t_GrillaProveedores').effect('pulsate');
+                                image.attr("alt", "agregar");
+                                image.attr("src", "/images/err.png");
+                            }
+                        }); 
+
+                    }#}
+                });
+                {#
+                //Click en mensajes leidos para pop-up de detalles
+                $("[id^='leidosProveedor_']").click(function(){
+                    var idProveedor = ($(this).attr('id')).split('_');
+                    var nombreProveedor = $('#GrillaProveedores').jqGrid('getCell',idProveedor[1],'nombre');
+                    var apellidoProveedor = $('#GrillaProveedores').jqGrid('getCell',idProveedor[1],'apellido');
+                    $('#mensajesLeidos').empty().load('{{ path('envio_leidos_proveedor') }}?idProveedor='+$(this).attr('title')+'&idEnvio={{envioId}}').dialog({ 
+                        title: 'Mensajes leidos por '+nombreProveedor+' '+apellidoProveedor,
+                            width: ($(window).width()-50),
+                            height: ($(window).height() - 50),
+                            modal: true,
+                            close: function(event, ui) {
+                                $(this).dialog("destroy");
+                            }
+                        });
+                        $('#mensajesLeidos').dialog('open');
+                });
+                #}
+                //Reenviar msj a proveedor
+                var idDiv = '';
+                $("[id^='reenviarProveedor_']").click(function(){
+                    idDiv = ($(this).attr('id'));
+                    var id = ($(this).attr('id')).split('_');
+                    /*$('#'+$(this).attr('id')).removeClass('icon-mail-reply-all icon-small enlaceE');
+                    $('#'+$(this).attr('id')).addClass('icon-spinner icon-spin');*/
+                    $('#'+$(this).attr('id')).removeClass('fa fa-reply-all icon-small enlaceE imagen');
+                    $('#'+$(this).attr('id')).addClass('fa fa-refresh fa-spin');
+                    $.post("{{ path('envio_enviar') }}",{ envioId:{{ envioId }}, reenvioProveedorId: id[1] },function(data){
+                        if(data.resultado=='1'){
+                            $('#t_GrillaProveedores').html('El Proveedor ha recibido copia del correo.');
+                        }else{
+                            $('#t_GrillaProveedores').html('Error: el Proveedor no ha recibido copia del correo.');
+                        }
+                        $('#'+idDiv).removeClass('fa fa-refresh fa-spin');
+                        $('#'+idDiv).addClass('fa fa-reply-all icon-small enlaceE imagen');
+                        return false;
+                    }, "json");
+                });
+                
+            }
+        }).navGrid('#pGrillaProveedores',{edit:false,add:false,del:false},{},{},{},{multipleSearch:true});
+        $("#GrillaProveedores").jqGrid('navButtonAdd','#pGrillaProveedores',{ caption:"Agregar Todos",buttonicon:"fa fa-plus-square", onClickButton:function(){
+                            
+            $.ajax({ 
+                url: "{{ path('envio_agregarProveedor') }}?"+ConsultaActualGrillas('#GrillaProveedores')+'&multiple=true',
+                type: 'post',
+                data: {envioId:{{envioId}} },
+                dataType: 'json',
+                success: function(data){
+                    $.noty.closeAll();
+
+                    reloadGrid('#GrillaProveedores');
+                    jQuery("#grilla").jqGrid('setRowData',{{envioId}},{integrantes:data.integrantes});
+                    MensajeConfirmacion('Los Proveedores se han agregado con exito a el grupo.');
+                }
+            }); 
+           
+        }});
+        $("#GrillaProveedores").jqGrid('navButtonAdd','#pGrillaProveedores',{ caption:"Eliminar Todos",buttonicon:"fa fa-trash", onClickButton:function(){
+                            
+            $.ajax({ 
+                url: "{{ path('envio_eliminarProveedor') }}?"+ConsultaActualGrillas('#GrillaProveedores')+'&multiple=true',
+                type: 'post',
+                data: {envioId:{{envioId}} },
+                dataType: 'json',
+                success: function(data){
+                    $.noty.closeAll();
+
+                    reloadGrid('#GrillaProveedores');
+                    jQuery("#grilla").jqGrid('setRowData',{{envioId}},{integrantes:data.integrantes});
+                    MensajeConfirmacion('Los Proveedor se han eliminado con exito de el grupo.');
+                }
+            });
+                            
+        }});
+        $("#GrillaProveedores").jqGrid('navButtonAdd','#pGrillaProveedores',{ caption:"Exportar Estadísticas",buttonicon:"fa fa-file-excel-o", onClickButton:function(){
+            noty({
+                layout:'center',
+                text: '¿Que archivo quiere descargar?:\n\
+                    <div style="text-aling:justify;">DETALLE: detalle de los correos leidos.\n\
+                    <br>CONSOLIDADO: Correos leidos</div>',
+                modal:true,
+                type:'alert',
+                buttons: [
+                    {addClass: 'btn btn-primary', text: 'Detalle', onClick: function($noty) {
+                            window.open(Routing.generate('envio_xlsLeidosProveedor')+'?detalle=1&envioId={{envioId}}&'+ConsultaActual());
+                            $.noty.closeAll();
+                        }
+                    },
+                    {addClass: 'btn btn-success', text: 'Consolidado', onClick: function($noty) {
+                            window.open(Routing.generate('envio_xlsLeidosProveedor')+'?envioId={{envioId}}&'+ConsultaActual());
+                            $.noty.closeAll();
+                        }
+                    }
+                ]
+            });       
+        }});
+    });
+    function reloadEstudiantes(){jQuery("#GrillaProveedores").trigger("reloadGrid");}
+    function ConsultaActual(){
+        var pd =$("#GrillaProveedores").getGridParam("postData");
+        var r="";
+        var control=0;
+        $.each(pd,function(i){
+            if(control>0)r+="&";r+=i+"="+pd[i];control++;
+        });
+        return r;
+    }
+</script>

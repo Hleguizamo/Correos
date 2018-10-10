@@ -1,0 +1,55 @@
+<script type="text/javascript">
+    jQuery().ready(function (){
+        $.jgrid.defaults.width = 780;
+        $.jgrid.defaults.responsive = true;
+        $.jgrid.defaults.styleUI = 'Bootstrap';
+        jQuery("#GrillaAsignado").jqGrid({
+            url: '{{ path('grupo_proveedorAsignadoXml') }}?grupoId={{grupoId}}',
+            datatype: "xml",
+            colModel:[
+                    {label:'', name:'asignado', index:'asignado', hidden:true},
+                    {label:'NIT', name:'nit', index:'p.nit',width:40},
+                    {label:'CODIGO', name:'codigo', index:'p.codigo',width:40},
+                    {label:'EMPRESA', name:'empresa', index:'p.nombre'},
+                    {label:'NOMBRE', name:'nombre', index:'p.representanteLegal'}
+            ],
+            rowNum: 100,
+            width: ($(window).width()-6),
+            rowList: [100,200,300,400],
+            pager: '#pGrillaAsignado',
+            sortname: 'p.nit',
+            viewrecords: true,
+            sortorder: "DESC",
+            subGrid: true, // set the subGrid property to true to show expand buttons for each row
+            subGridRowExpanded: showChildGrid,
+            height:($(window).height()-250),
+            toolbar: [true,'bottom']
+        }).navGrid('#pGrillaAsignado',{edit:false,add:false,del:false},{},{},{},{multipleSearch:true});
+    });
+    function showChildGrid(parentRowID, parentRowKey) {
+        var childGridID = parentRowID + "_table";
+        var childGridPagerID = parentRowID + "_pager";
+        $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
+        $("#" + childGridID).jqGrid({
+            url: '{{ path('grupo_proveedorContatosXml') }}?porveedorId='+parentRowKey+'&grupoId={{grupoId}}',
+            datatype: "xml",
+            colModel: [
+                { label: 'id', name: 'id', hidden:true },
+                { label:'', name:'asignado', index:'asignado', width: 16, search:false,align:'center'},
+                { label: 'Nombre', name: 'RequiredDate', width: 100 },
+                { label: 'Ciudad', name: 'ShipName', width: 100 },
+                { label: 'Email', name: 'ShipCity', width: 100 },
+                { label: 'Telefono', name: 'Freight', width: 75 },
+                { label: 'Movil', name: 'Freight', width: 75 },
+            ],
+            rowNum: 100,
+            width: ($(window).width()-56),
+            sortname: 'c.id',
+            viewrecords: true,
+            sortorder: "DESC",
+            height: '100%',
+            pager: "#" + childGridPagerID
+        }).navGrid("#" + childGridPagerID,{edit:false,add:false,del:false,search:false,refresh:false},{},{},{},{multipleSearch:false});
+    }
+    function reload(gilla){jQuery(gilla).trigger("reloadGrid");}
+</script>

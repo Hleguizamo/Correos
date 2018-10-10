@@ -1,0 +1,31 @@
+contactoProveedor:
+    path:     /
+    defaults: { _controller: WABackendBundle:ContactoProveedor:index }
+    
+contactoProveedor_xml:
+    path:    /xml
+    defaults: { _controller: WABackendBundle:ContactoProveedor:contactoXml}
+
+contactoProveedor_nuevo:
+    path:    /nuevo
+    defaults: { _controller: WABackendBundle:ContactoProveedor:new}
+
+contactoProveedor_editar:
+    path:    /editar
+    defaults: { _controller: WABackendBundle:ContactoProveedor:edit}
+    options:
+      expose: true
+
+contactoProveedor_eliminar:
+    path:    /eliminar
+    defaults: { _controller: WABackendBundle:ContactoProveedor:delete}
+    options:
+      expose: true
+
+contactoProveedor_cargueMasivo:
+    path:    /cargueMasivo
+    defaults: { _controller: WABackendBundle:ContactoProveedor:cargueMasivo}
+
+contactoProveedor_cargaContactosProveedor:
+    path:    /cargaContactosProveedor
+    defaults: { _controller: WABackendBundle:ContactoProveedor:cargaContactosProveedor}

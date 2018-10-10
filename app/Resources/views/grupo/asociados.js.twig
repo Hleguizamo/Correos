@@ -1,0 +1,79 @@
+<script type="text/javascript">
+    jQuery().ready(function (){
+        $.jgrid.defaults.width = 780;
+        $.jgrid.defaults.responsive = true;
+        $.jgrid.defaults.styleUI = 'Bootstrap';
+        jQuery("#GrillaAsociados").jqGrid({
+            url: '{{ path('grupo_asociadoXml') }}?grupoId={{grupoId}}&tipoGrupo={{tipoGrupo}}',
+            datatype: "xml",
+            colNames:['','DEPARTAMENTO','CIUDAD', 'CENTRO', 'CODIGO','RUTA', '{%if tipoGrupo!=1%}DROGUERIA{%else%}ASOCIADO{%endif%}', 'NIT', 'EMAIL'],
+            colModel:[
+                    {name:'asignado', index:'asignado', width:16, search:false,align:'center' },
+                    {name:'departamento', index:'a.depto' },
+                    {name:'ciudad', index:'a.ciudad' },
+                    {name:'centro', index:'a.centro',width:30},
+                    {name:'codigo', index:'a.codigo',width:35},
+                    {name:'ruta', index:'a.ruta',width:35},
+                    {%if tipoGrupo!=1%}{name:'drogueria', index:'a.drogueria' }{%else%}{name:'asociado', index:'a.asociado' }{%endif%},
+                    {name:'nit', index:'a.nit' },
+                    {%if tipoGrupo!=1%}{name:'email', index:'a.email' }{%else%}{name:'email_asociado', index:'a.email_asociado' }{%endif%}
+            ],
+            rowNum: 100,
+            width: ($(window).width()-6),
+            rowList: [100,200,300,400],
+            pager: '#pGrillaAsociados',
+            sortname: 'ig.id',
+            viewrecords: true,
+            sortorder: "DESC",
+            height:($(window).height()-250),
+            toolbar: [true,'bottom'],
+            loadComplete: function(){
+                $('.selectAsociado').click(function(){
+                    var id = $(this).attr('id').split('_')[1];
+                    var icon = $(this);
+                    icon.addClass('fa-circle-o-notch fa-spin');
+                    if(icon.hasClass( "text-warning" )){
+                       $.post("{{ path('grupo_asociadoAgregar') }}",{ grupoId:{{ grupoId }}, padreId: id },function(data){
+                           $('#t_GrillaAsociados').html('El Asociado se ha agregado con exito a el grupo.');
+                           icon.removeClass('fa-exclamation-circle text-warning fa-circle-o-notch fa-spin');
+                           icon.addClass('fa-check text-success');
+                       }, "json");
+                    }else{
+                       $.post("{{ path('grupo_asociadoEliminar') }}", { grupoId:{{ grupoId }}, padreId: id },function(data){
+                           $('#t_GrillaAsociados').html('El Asociado se ha eliminado del grupo con exito.');
+                           icon.removeClass('fa-check text-success fa-circle-o-notch fa-spin');
+                           icon.addClass('fa-exclamation-circle text-warning');
+                       }, "json");
+                    }
+                });
+            }
+        }).navGrid('#pGrillaAsociados',{edit:false,add:false,del:false},{},{},{},{multipleSearch:true});
+        $("#GrillaAsociados").jqGrid('navButtonAdd','#pGrillaAsociados',{ caption:'<span class="text-success"><i class="fa fa-plus-square-o"></i> Agregar Todos<span>',buttonicon:"none", onClickButton:function(){
+            var preloader=Cargando('Estamos agregando todos los asociados al grupo, por favor espere...');
+            $.post("{{ path('grupo_asociadoAgregar') }}?"+ConsultaActualGrillas('#GrillaAsociados')+'&multiple=true&tipoGrupo={{tipoGrupo}}', { grupoId:{{ grupoId }} },
+            function(data){
+                reloadAsociado('#GrillaAsociados');
+                preloader.close();
+                MensajeConfirmacion('Los Asociados se han agregado con exito a el grupo.');
+            }, "json");
+        }});
+        $("#GrillaAsociados").jqGrid('navButtonAdd','#pGrillaAsociados',{ caption:'<span class="text-danger"><i class="fa fa-trash"></i> Eliminar Todos<span>',buttonicon:"none", onClickButton:function(){
+            var preloader=Cargando('Estamos elminando todos los asociados del grupo, por favor espere...');
+            $.post("{{ path('grupo_asociadoEliminar') }}?"+ConsultaActualGrillas('#GrillaAsociados')+'&multiple=true', { grupoId:{{ grupoId }} },
+            function(data){
+                reloadAsociado('#GrillaAsociados');
+                preloader.close();
+                MensajeConfirmacion('Los Asociados se han eliminado con exito de el grupo.');
+            }, "json");
+        }});
+        $("#GrillaAsociados").jqGrid('navButtonAdd','#pGrillaAsociados',{ title:"Cargar destinatarios", caption: '<span class="text-primary"><i class="fa fa-upload"></i> Cargar Destinatarios<span> ', buttonicon:"none", onClickButton:function(){
+            noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+            $('#tituloModal').html('Cargar Archivo');
+            $('#contenidoModal').load('{{path('grupo_cargaArchivoAsociado')}}?grupoId={{grupoId}}', function(){
+                $('#modal').modal('show');
+                $.noty.closeAll();
+            });
+        }});
+    });
+    function reloadAsociado(gilla){jQuery(gilla).trigger("reloadGrid");}
+</script>

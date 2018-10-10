@@ -1,0 +1,30 @@
+administradores:
+    path:     /
+    defaults: { _controller: WABackendBundle:Administrador:index }
+administradores_xml:
+    path:    /xml
+    defaults: { _controller: WABackendBundle:Administrador:xml}
+
+administradores_new:
+    path:    /new
+    defaults: { _controller: WABackendBundle:Administrador:new}
+    options:
+      expose: true
+
+administradores_edit:
+    path: /{id}/edit
+    defaults: { _controller: WABackendBundle:Administrador:edit }
+    options:
+        expose: true
+
+administradores_edit_permisos:
+    path: /{id}/edit_permisos
+    defaults: { _controller: WABackendBundle:Administrador:editPermisos }
+    options:
+        expose: true
+
+administradores_delete:
+    path: /{id}/delete
+    defaults: { _controller: WABackendBundle:Administrador:delete }
+    options:
+        expose: true

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rows>
+  <page>{{ pagina }}</page>
+  <total>{{ maxPagina }}</total>
+  <records>{{ numRegistros }}</records>
+  {% for entity in entities %}
+  <row id="{{ entity.id }}">
+    <cell><![CDATA[{{ entity.id }}]]></cell>
+    <cell><![CDATA[{{ entity.asunto }}]]></cell>
+    <cell><![CDATA[{{ entity.adjuntos }}]]></cell>
+    <cell><![CDATA[{{ entity.cantidadEnviados }}]]></cell>
+    <cell><![CDATA[{{ entity.grupo}}]]></cell>
+    <cell><![CDATA[{{ entity.administrador }}]]></cell>
+    <cell><![CDATA[  <button type="button" id="enviar_{{entity.id}}" class="btn btn-primary btn-sm enviar" title="Enviar" value="{{entity.id}}"><i class="fa fa-paper-plane" aria-hidden="true"></i></button> ]]></cell>
+    <cell><![CDATA[  <button type="button" id="ver_{{entity.id}}" class="btn btn-primary btn-sm ver"><i class="fa fa-eye" aria-hidden="true"></i></button> ]]></cell>
+  </row>
+  {% endfor %}
+</rows>
+
+

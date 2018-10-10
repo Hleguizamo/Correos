@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rows>
+    <page>{{ pagina }}</page>
+    <total>{{ maxPagina }}</total>
+    <records>{{ numRegistros }}</records>
+    {% for entity in entities %}
+    <row id="{{ entity.id }}">
+        <cell><![CDATA[{{ entity.id }}]]></cell>
+        <cell><![CDATA[<i class="selectProveedorContato fa {% if integranteGrupo[entity.id] is defined %}fa-check text-success{% else %}fa-exclamation-circle text-warning{% endif %}" aria-hidden="true" id="asignarDestinatario_{{ entity.id }}"></i> ]]></cell>
+        <cell><![CDATA[{{ entity.nombreContacto|capitalize }}]]></cell>
+        <cell><![CDATA[{{ entity.ciudad }}]]></cell>
+        <cell><![CDATA[{{ entity.email }}]]></cell>
+        <cell><![CDATA[{{ entity.telefono }}]]></cell>
+        <cell><![CDATA[{{ entity.movil }}]]></cell>
+    </row>
+    {% endfor %}
+</rows>

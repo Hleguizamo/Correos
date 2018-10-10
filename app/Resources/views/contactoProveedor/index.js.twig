@@ -1,0 +1,271 @@
+<script type="text/javascript">
+
+$().ready(function (){
+  $("#grilla").jqGrid({
+    styleUI : 'Bootstrap',
+    url:'{{path("provedores_xml")}}',
+    datatype: "xml",
+    colModel: [
+      { label: 'ID', name:'id',index:'p.id', hidden: true},
+      { label: 'NIT', name: 'nit', key: true,index:'p.nit' },
+      { label: 'CODIGO', name: 'nombre',index:'p.nombre'},
+      { label: 'NOMBRE', name: 'apellido',index:'p.apellido'},
+      { label: 'REPRESENTANTE LEGAL', name: 'empresa',index:'p.empresa'},
+      { label: 'EMAIL REPRESENTANTE LEGAL', name: 'telefono',index:'p.telefono'},
+      { label: 'TELEFONO REPRESENTANTE LEGAL', name: 'telefono',index:'p.telefono'}
+ 
+    ],
+    autowidth:true,
+    rowNum: 100,
+    autowidth: true,
+    rowList: [100,200,300,400],
+    pager: '#pGrilla',
+    sortname: 'p.id',
+    viewrecords:true,
+    subGrid: true,
+    subGridRowExpanded: showChildGrid,
+    sortorder: "DESC",
+    height:($(document).height()-120)
+  });
+  // activate the build in search with multiple option
+  $('#grilla').navGrid("#pGrilla", {                
+      search: true, // show search button on the toolbar
+      add: false,
+      edit: false,
+      del: false,
+      refresh: true
+    },
+  {}, // edit options
+  {}, // add options
+  {}, // delete options
+  { multipleSearch: true } // search options - define multiple search
+  );
+  $("#grilla").jqGrid('navButtonAdd','#pGrilla',{ caption:'<span class="text-success"><i class="fa fa-plus-square-o"></i> Nuevo<span>',title:"Nuevo Proveedor",buttonicon:"none", onClickButton:function(){
+          noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+          $('#tituloModal').html('Nuevo Proveedor');
+          $('#contenidoModal').load('{{path('provedores_nuevo')}}', function(){
+              $('#modal').modal('show');
+              $.noty.closeAll();
+          });
+      }
+  });
+  $("#grilla").jqGrid('navButtonAdd','#pGrilla',{ caption:'<span class="text-primary"><i class="fa fa-pencil"></i> Editar<span>',title:"Editar Proveedor",buttonicon:"none", onClickButton:function(){
+        var gsr = $("#grilla").jqGrid('getGridParam','selrow'); 
+        if(gsr){
+          noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+          dataRow = $("#grilla").getRowData(gsr);
+
+          $('#tituloModal').html('Editar Proveedor');
+          $("#contenidoModal").load(Routing.generate('provedores_editar',{id: dataRow.id}),function(){
+              $('#modal').modal('show');
+              $.noty.closeAll();
+          });
+
+        } else { 
+          AlertaPersonalizable('Por favor seleccione la fila a editar.',900,'warning'); 
+        }
+      }
+  });
+  $("#grilla").jqGrid('navButtonAdd','#pGrilla',{ caption:'<span class="text-danger"><i class="fa fa-trash"></i> Eliminar<span>',title:"Eliminar Proveedor",buttonicon:"none", onClickButton:function(){
+        var gsr = $("#grilla").jqGrid('getGridParam','selrow'); 
+        if(gsr){
+          dataRow = $("#grilla").getRowData(gsr);
+          noty({
+            layout : 'center',
+            text: '<div style="text-align:justify;">¿ Desea eliminar el proveedor  ['+dataRow.empresa+'] ?</div>',
+            modal : true,
+            buttons: [
+            {addClass: ' btn  btn-danger', text: 'ACEPTAR', onClick: function($noty) {
+            $noty.close();
+
+                $.ajax({
+                  url: Routing.generate('provedores_eliminar',{'id': dataRow.id}),
+                  method:'GET',
+                  beforeSend:function(){
+                    noty({layout:'center',text:'<strong>Cargando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']}); 
+                  },
+                  statusCode:{
+                    200:function(data){
+
+                      $.noty.closeAll();
+
+                      if( data['status'] == 2 ){
+                        MensajeConfirmacion('No es posible eliminar el Proveedor ya que se encuentra asociado a grupos creados en el sistema.');
+                      }else{
+                        AlertaPersonalizable('El registro se elimino correctamente',850,'information'); 
+                        reloadGrid();
+                      }
+
+                    },
+                    500:function(){
+                      $.noty.closeAll();
+                      MensajeConfirmacionError('Se produjo un error al realizar la acción. Porfavor recargue la página e intente de nuevo.');
+                    }
+                  }
+                });                               
+              }},
+              {addClass: ' btn btn-default', text: 'CANCELAR', onClick: function($noty) {
+                $noty.close();
+              }}
+            ],
+              type : 'confirm',
+              animation: {
+              open: 'animated bounceInLeft', // Animate.css class names
+              close: 'animated bounceOutLeft', // Animate.css class names
+              easing: 'swing', // unavailable - no need
+              speed: 500 // unavailable - no need
+            }
+          });
+        } else { 
+          AlertaPersonalizable('Por favor seleccione el proveedor a eliminar.',900,'warning'); 
+        }
+      }
+  });
+  $("#grilla").jqGrid('navButtonAdd','#pGrilla',{ caption:'<span class="text-success"><i class="fa fa-upload"></i> Cargue<span>',title:"Cargue Masivo",buttonicon:"none", onClickButton:function(){
+          noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+          $('#tituloModal').html('Cargue Masivo');
+          $('#contenidoModal').load('{{path('provedores_cargueMaxivo')}}', function(){
+              $('#modal').modal('show');
+              $.noty.closeAll();
+          });
+      }
+  });
+  $("#grilla").jqGrid('navButtonAdd','#pGrilla',{ caption:'<span class="text-primary"><i class="fa fa-download"></i> Exportar<span>',title:"Exportar Contactos",buttonicon:"none", onClickButton:function(){
+          noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+          $('#tituloModal').html('Exportar Contactos');
+          $('#contenidoModal').load('{{path('provedores_exportar')}}', function(){
+              $('#modal').modal('show');
+              $.noty.closeAll();
+          });
+      }
+  });
+});
+function showChildGrid(parentRowID, parentRowKey) {
+    var childGridID = parentRowID + "_table";
+    var childGridPagerID = parentRowID + "_pager";
+    $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
+    $("#" + childGridID).jqGrid({
+        styleUI : 'Bootstrap',
+        url: '{{ path('contactoProveedor_xml') }}?porveedorId='+parentRowKey,
+        datatype: "xml",
+        colModel: [
+            { label: 'id', name: 'id', hidden:true },
+            { label: 'Nombre', name: 'nombre', width: 100 },
+            { label: 'Cargo', name: 'cargo', width: 75 },
+            { label: 'Ciudad', name: 'ciudad', width: 100 },
+            { label: 'Email', name: 'email', width: 100 },
+            { label: 'Telefono', name: 'telefono', width: 75 },
+            { label: 'Movil', name: 'movil', width: 75 },
+        ],
+        rowNum: 100,
+        width: ($(window).width()-56),
+        sortname: 'cp.nombreContacto',
+        viewrecords: true,
+        sortorder: "ASC",
+        height: '100%',
+        pager: "#" + childGridPagerID,
+        loadComplete: function(){
+            $('.selectProveedorContato').click(function(){
+                var id = $(this).attr('id').split('_')[1];
+                var icon = $(this);
+                icon.addClass('fa-circle-o-notch fa-spin');
+                if(icon.hasClass( "text-warning" )){
+                   $.post("{{ path('grupo_proveedorContactoAgregar') }}",{ padreId: parentRowKey, proveedorContacto: id },function(data){
+                       $('#t_GrillaProveedores').html('El Contacto del proveedor se ha agregado con exito a el grupo.');
+                       icon.removeClass('fa-exclamation-circle text-warning fa-circle-o-notch fa-spin');
+                       icon.addClass('fa-check text-success');
+                   }, "json");
+                }else{
+                   $.post("{{ path('grupo_proveedorContactoEliminar') }}", { proveedorId: parentRowKey, proveedorContacto: id },function(data){
+                       $('#t_GrillaProveedores').html('El Contacto del proveedor se ha eliminado del grupo con exito.');
+                       icon.removeClass('fa-check text-success fa-circle-o-notch fa-spin');
+                       icon.addClass('fa-exclamation-circle text-warning');
+                   }, "json");
+                }
+            });
+        }
+    }).navGrid("#" + childGridPagerID,{edit:false,add:false,del:false,search:false,refresh:false},{},{},{},{multipleSearch:false});
+    $("#" + childGridID).jqGrid('navButtonAdd',"#" + childGridPagerID,{ caption:'<span class="text-success"><i class="fa fa-plus-square-o"></i> Nuevo<span>',title:"Nuevo Proveedor",buttonicon:"none", onClickButton:function(){
+            noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+            $('#tituloModal').html('Nuevo Contacto Proveedor');
+            $('#contenidoModal').load('{{path('provedores_nuevo')}}', function(){
+                $('#modal').modal('show');
+                $.noty.closeAll();
+            });
+        }
+    });
+    $("#" + childGridID).jqGrid('navButtonAdd',"#" + childGridPagerID,{ caption:'<span class="text-primary"><i class="fa fa-pencil"></i> Editar<span>',title:"Editar Proveedor",buttonicon:"none", onClickButton:function(){
+          var gsr = $("#grilla").jqGrid('getGridParam','selrow'); 
+          if(gsr){
+            noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+            dataRow = $("#grilla").getRowData(gsr);
+
+            $('#tituloModal').html('Editar Contacto Proveedor');
+            $("#contenidoModal").load(Routing.generate('provedores_editar',{id: dataRow.id}),function(){
+                $('#modal').modal('show');
+                $.noty.closeAll();
+            });
+
+          } else { 
+            AlertaPersonalizable('Por favor seleccione la fila a editar.',900,'warning'); 
+          }
+        }
+    });
+    $("#" + childGridID).jqGrid('navButtonAdd',"#" + childGridPagerID,{ caption:'<span class="text-danger"><i class="fa fa-trash"></i> Eliminar<span>',title:"Eliminar Proveedor",buttonicon:"none", onClickButton:function(){
+          var gsr = $("#" + childGridID).jqGrid('getGridParam','selrow'); 
+          if(gsr){
+            dataRow = $("#" + childGridID).getRowData(gsr);
+            noty({
+              layout : 'center',
+              text: '<div style="text-align:justify;">¿ Desea eliminar el contacto del proveedor  ['+dataRow.bombre+'] ?</div>',
+              modal : true,
+              buttons: [
+              {addClass: ' btn  btn-danger', text: 'ACEPTAR', onClick: function($noty) {
+              $noty.close();
+
+                  $.ajax({
+                    url: Routing.generate('provedores_eliminar',{'id': dataRow.id}),
+                    method:'GET',
+                    beforeSend:function(){
+                      noty({layout:'center',text:'<strong>Cargando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']}); 
+                    },
+                    statusCode:{
+                      200:function(data){
+
+                        $.noty.closeAll();
+
+                        if( data['status'] == 2 ){
+                          MensajeConfirmacion('No es posible eliminar el Proveedor ya que se encuentra asociado a grupos creados en el sistema.');
+                        }else{
+                          AlertaPersonalizable('El registro se elimino correctamente',850,'information'); 
+                          reloadGrid();
+                        }
+
+                      },
+                      500:function(){
+                        $.noty.closeAll();
+                        MensajeConfirmacionError('Se produjo un error al realizar la acción. Porfavor recargue la página e intente de nuevo.');
+                      }
+                    }
+                  });                               
+                }},
+                {addClass: ' btn btn-default', text: 'CANCELAR', onClick: function($noty) {
+                  $noty.close();
+                }}
+              ],
+                type : 'confirm',
+                animation: {
+                open: 'animated bounceInLeft', // Animate.css class names
+                close: 'animated bounceOutLeft', // Animate.css class names
+                easing: 'swing', // unavailable - no need
+                speed: 500 // unavailable - no need
+              }
+            });
+          } else { 
+            AlertaPersonalizable('Por favor seleccione el contacto del proveedor a eliminar.',900,'warning'); 
+          }
+        }
+    });
+}
+function reloadGrid(){$("#grilla").trigger("reloadGrid");}
+</script>

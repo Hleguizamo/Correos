@@ -1,0 +1,206 @@
+<script type="text/javascript">
+    jQuery().ready(function (){
+        jQuery("#GrillaAsociados").jqGrid({
+            styleUI : 'Bootstrap',
+            url: '{{ path('envio_asociadosXml') }}?envioId={{envioId}}&tipoGrupo={{tipoGrupo}}',
+            datatype: "xml",
+            colModel:[
+                    {label:' ',name:'asignado', index:'asignado', width:20, search:false },
+                    {label:'REENVIAR',name:'reenvios', index:'ci.reenviado', width: 20, search:false, align:'center'},
+                    {label:'LEIDOS',name:'el', index:'el.id', width: 20, align:'center'},
+                    {label:'DEPARTAMENTO',name:'departamento', index:'a.depto' },
+                    {label:'CIUDAD',name:'ciudad', index:'a.ciudad' },
+                    {label:'CENTRO',name:'centro', index:'a.centro',width:30},
+                    {label:'CODIGO',name:'codigo', index:'a.codigo',width:35},
+                    {%if tipoGrupo!=1%}{label:'DROGUERIA',name:'drogueria', index:'a.drogueria' }{%else%}{label:'ASOCIADO',name:'asociado', index:'a.asociado' }{%endif%},
+                    {label:'NIT',name:'nit', index:'a.nit' },
+                    {%if tipoGrupo!=1%}{label:'EMAIL',name:'email', index:'a.email' }{%else%}{label:'EMAIL',name:'email_asociado', index:'a.email_asociado' }{%endif%},
+                    {label:'FECHA ENVIO',name:'fechaEnvio', index:'fechaEnvio' }         
+                    
+            ],
+            rowNum: 100,
+            width: $(window).width() - 10,
+            rowList: [100,200,300,400],
+            pager: '#pGrillaAsociados',
+            sortname: 'ig.id',
+            viewrecords: true,
+            sortorder: "DESC",
+            height:($(window).height()-250),
+            toolbar: [true,'bottom'],
+            ondblClickRow: function(ids) {
+                                
+                var data = jQuery(this).getRowData(ids);
+                
+                $('#idTituloModalAsociados').empty().html('Envio para el destinatario [<span class="text-info">'+{%if tipoGrupo!=1%}data.drogueria{%else%}data.asociado{%endif%}+' - '+{%if tipoGrupo!=1%}data.email{%else%}data.email_asociado{%endif%}+'</span>]<br/>Fecha Enviado:'+data.fechaEnvio);
+                $('#idBodyModalAsociados').empty().load('{{path('envio_vistaPreviaMensajes')}}?Tipo=asociado&tipoGrupo={{tipoGrupo}}&envioId={{envioId}}&destinatarioId='+ids, function(){
+                    
+                    $("#modalLgAsociados").modal('show');
+                    $.noty.closeAll();
+                    
+                });               
+                                
+                                
+            },
+            loadComplete: function(){
+                
+                $('.selectAsociado').click(function(){
+                    var id = $(this).attr('id').split('_')[1];
+                    var image = $(this);
+                    image.attr("src", "/images/ajax-loader.gif");
+                    if(this.alt=='agregar'){
+                       
+                       $.ajax({ 
+                            url: "{{ path('envio_agregarAsociado') }}",
+                            type: 'post',
+                            data: {envioId:{{envioId}}, asociadoId: id},
+                            dataType: 'json',
+                            success: function(data){
+                                $.noty.closeAll();
+                                
+                                $('#t_GrillaAsociados').html('El Asociado se ha agregado para recibir copia del Correo.');
+                                //$('#t_GrillaAsociados').effect('pulsate');
+                                image.attr("src", "/images/tick.png");
+                                image.attr("alt", "quitar");
+                            }
+                        });
+                       
+                       
+                    }else{
+                       
+                       $.ajax({ 
+                            url: "{{ path('envio_eliminarAsociado') }}",
+                            type: 'post',
+                            data: {envioId:{{envioId}}, asociadoId: id},
+                            dataType: 'json',
+                            success: function(data){
+                                $.noty.closeAll();
+                                if(data == '1'){
+                                    $('#t_GrillaAsociados').html('Se cancela la recepcion de copia del correo del Asociado.');
+                                    //$('#t_GrillaAsociados').effect('pulsate');
+                                    image.attr("src", "/images/err.png");
+                                    image.attr("alt", "agregar");
+                                }else{
+                                    image.attr("src", "/images/err.png");
+                                    image.attr("alt", "agregar");
+                                }
+                                
+                            }
+                        });
+                       
+                       
+                    }
+                });
+                {#
+                //Click en mensajes leidos para pop-up de detalles
+                $("[id^='leidosAsociado_']").click(function(){
+                    var idAsociado = ($(this).attr('id')).split('_');
+                    var nombreAsociado = $('#GrillaAsociados').jqGrid('getCell',idAsociado[1],'drogueria');
+                    $('#mensajesLeidos').empty().load('{{ path('envio_leidos_asociado') }}?idAsociado='+$(this).attr('title')+'&idEnvio={{envioId}}').dialog({ 
+                        title: 'Mensajes leidos por '+nombreAsociado,
+                            width: ($(window).width()-50),
+                            height: ($(window).height() - 50),
+                            modal: true,
+                            close: function(event, ui) {
+                                $(this).dialog("destroy");
+                            }
+                        });
+                        $('#mensajesLeidos').dialog('open');
+                });
+                #}
+                //Reenviar msj a proveedor
+                var idDiv = '';
+                $("[id^='reenviarAsociado_']").click(function(){
+                    idDiv = ($(this).attr('id'));
+                    var id = ($(this).attr('id')).split('_');
+                    /*$('#'+$(this).attr('id')).removeClass('icon-mail-reply-all icon-small enlaceE');
+                    $('#'+$(this).attr('id')).addClass('icon-spinner icon-spin');*/
+                    $('#'+$(this).attr('id')).removeClass('fa fa-reply-all icon-small enlaceE imagen');
+                    $('#'+$(this).attr('id')).addClass('fa fa-refresh fa-spin');
+                    $.post("{{ path('envio_enviar') }}",{ envioId:{{ envioId }}, reenvioAsociadoId: id[1] },function(data){
+                        if(data.resultado=='1'){
+                            $('#t_GrillaAsociados').html('El Asociado ha recibido copia del correo.');
+                        }else if(data.resultado=='6'){
+                            $('#t_GrillaAsociados').html('Error: no se pudo validar las credenciales para el envio.');
+                        }else{
+                            $('#t_GrillaAsociados').html('Error: el Asociado no ha recibido copia del correo.');
+                        }
+                        /*$('#'+idDiv).removeClass('icon-spinner icon-spin');
+                        $('#'+idDiv).addClass('icon-mail-reply-all icon-small enlaceE');*/
+                        $('#'+idDiv).removeClass('fa fa-refresh fa-spin');
+                        $('#'+idDiv).addClass('fa fa-reply-all icon-small enlaceE imagen');
+                        return false;
+                    }, "json");
+                });
+                
+            }
+        }).navGrid('#pGrillaAsociados',{edit:false,add:false,del:false},{},{},{},{multipleSearch:true});
+        $("#GrillaAsociados").jqGrid('navButtonAdd','#pGrillaAsociados',{ caption:"Agregar Todos",buttonicon:"fa fa-plus", onClickButton:function(){
+            var preloader=Cargando('Estamos agregando todos los asociados para recibir copia del correo, por favor espere...');
+                           
+           $.ajax({ 
+                url: "{{ path('envio_agregarAsociado') }}?"+ConsultaActualGrillas('#GrillaAsociados')+'&multiple=true',
+                type: 'post',
+                data: {envioId:{{envioId}} },
+                dataType: 'json',
+                success: function(data){
+                    $.noty.closeAll();
+                    reloadGrid('#GrillaAsociados');
+                    jQuery("#grilla").jqGrid('setRowData',{{envioId}},{integrantes:data.integrantes});
+                    MensajeConfirmacion('Los Asociados se han agregado con exito a el para recibir copia del correo.');
+
+                }
+            });                 
+                            
+        }});
+        $("#GrillaAsociados").jqGrid('navButtonAdd','#pGrillaAsociados',{ caption:"Eliminar Todos",buttonicon:"fa fa-trash", onClickButton:function(){
+            var preloader=Cargando('Estamos elminando la recepcion de copia del correo de todos los asociados, por favor espere...');
+                            
+            $.ajax({ 
+                url: "{{ path('envio_eliminarAsociado') }}?"+ConsultaActualGrillas('#GrillaAsociados')+'&multiple=true',
+                type: 'post',
+                data: {envioId:{{envioId}} },
+                dataType: 'json',
+                success: function(data){
+                    $.noty.closeAll();
+                    reloadGrid('#GrillaAsociados');
+                    jQuery("#grilla").jqGrid('setRowData',{{envioId}},{integrantes:data.integrantes});
+                    MensajeConfirmacion('Ya no recibira copia de correo de ningun asociado.');
+
+                }
+            }); 
+                            
+        }});
+        $("#GrillaAsociados").jqGrid('navButtonAdd','#pGrillaAsociados',{ caption:"Exportar Estadisticas",buttonicon:"fa fa-file-excel-o", onClickButton:function(){
+            noty({
+                layout:'center',
+                text: '¿Que archivo quiere descargar?:\n\
+                    <div style="text-aling:justify;">DETALLE: detalle de los correos leidos.\n\
+                    <br>CONSOLIDADO: Correos leidos</div>',
+                modal:true,
+                type:'alert',
+                buttons: [
+                    {addClass: 'btn btn-primary', text: 'Detalle', onClick: function($noty) {
+                            window.open(Routing.generate('envio_xlsLeidosAsociados')+'?detalle=1&envioId={{envioId}}&'+ConsultaActual());
+                            $.noty.closeAll();
+                        }
+                    },
+                    {addClass: 'btn btn-success', text: 'Consolidado', onClick: function($noty) {
+                            window.open(Routing.generate('envio_xlsLeidosAsociados')+'?envioId={{envioId}}&'+ConsultaActual());
+                            $.noty.closeAll();
+                        }
+                    }
+                ]
+            });       
+        }});
+    });
+    function reloadPadres(){jQuery("#GrillaAsociados").trigger("reloadGrid");}
+    function ConsultaActual(){
+        var pd =$("#GrillaAsociados").getGridParam("postData");
+        var r="";
+        var control=0;
+        $.each(pd,function(i){
+            if(control>0)r+="&";r+=i+"="+pd[i];control++;
+        });
+        return r;
+    }
+</script>

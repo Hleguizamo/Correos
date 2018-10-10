@@ -1,0 +1,45 @@
+<script type="text/javascript">
+
+$().ready(function (){
+  $("#grilla").jqGrid({
+    styleUI : 'Bootstrap',
+    url:'{{path("cliente_xml")}}',
+    datatype: "xml",
+    colModel: [
+      { label: 'ID', name:'id',index:'c.id', hidden: true},
+      { label: 'CÓDIGO', name: 'codigo', key: true,index:'c.codigo' },
+      { label: 'DROGUERÍA', name: 'drogueria',index:'c.drogueria'},
+      { label: 'NIT', name: 'nit',index:'c.nit'},
+      { label: 'ASOCIADO', name: 'asociado',index:'c.asociado'},
+      { label: 'CIUDAD', name: 'ciudad',index:'c.ciudad'},
+      { label: 'TELÉFONO', name: 'telefono',index:'c.telefono'},
+      { label: 'TIPO', name: 'tipoCliente',index:'c.tipoCliente'}
+ 
+    ],
+    autowidth:true,
+    rowNum: 100,
+    autowidth: true,
+    rowList: [100,200,300,400],
+    pager: '#pGrilla',
+    sortname: 'c.asociado',
+    viewrecords:true,
+    sortorder: "ASC",
+    height:($(document).height()-120)
+  });
+  // activate the build in search with multiple option
+  $('#grilla').navGrid("#pGrilla", {                
+      search: true, // show search button on the toolbar
+      add: false,
+      edit: false,
+      del: false,
+      refresh: true
+    },
+  {}, // edit options
+  {}, // add options
+  {}, // delete options
+  { multipleSearch: true } // search options - define multiple search
+  );
+
+});
+function reloadGrid(){$("#grilla").trigger("reloadGrid");}
+</script>

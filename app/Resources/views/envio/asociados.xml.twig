@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rows>
+    <page>{{ pagina }}</page>
+    <total>{{ maxPagina }}</total>
+    <records>{{ numRegistros }}</records>
+    {% for entity in entities %}
+    <row id="{{ entity.id }}">
+        {% if entity.asignado %}
+            <cell><![CDATA[<img class="selectAsociado imagen" src="{{ asset('images/tick.png')}}" alt="quitar" id="asignarAsociado_{{ entity.id }}" data-tooltip title="Recibir copia de mensaje."></i>]]></cell>
+        {% else %}
+            <cell><![CDATA[<img class="selectAsociado imagen" alt="agregar" id="asignarAsociado_{{ entity.id }}" src="{{ asset('images/err.png')}}" data-tooltip title="Recibir copia de mensaje."></i>]]></cell>
+        {% endif %}
+        <cell><![CDATA[<i id="reenviarAsociado_{{ entity.id }}" class="fa fa-reply-all icon-small enlaceE imagen" data-tooltip title="Reenviar mensaje a asociado."></i>]]></cell>
+        {% if entity.enviado >= 1 %}
+        <cell><![CDATA[<strong id="leidosAsociado_{{entity.id}}" title="{{entity.idIntegrante}}" class="mensajesLeidosAsociado">{{ entity.leido }}</strong>]]></cell>
+        {% else %}        
+        <cell><![CDATA[<strong>{{ entity.enviado }}</strong>]]></cell>
+        {% endif %}
+        <cell><![CDATA[{{ entity.depto | raw }}]]></cell>
+        <cell><![CDATA[{{ entity.ciudad |capitalize }}]]></cell>
+        <cell>{{ entity.centro }}</cell>
+        <cell>{{ entity.codigo }}</cell>
+        <cell><![CDATA[{%if tipoGrupo!=1%}{{ entity.drogueria|capitalize }}{%else%}{{ entity.asociado|capitalize }}{%endif%}]]></cell>
+        <cell>{{ entity.nit }}</cell>
+        <cell><![CDATA[{%if tipoGrupo!=1%}{{ entity.email }}{%else%}{{ entity.email_asociado }}{%endif%}]]></cell>
+        <cell><![CDATA[{{ entity.fechaEnvio }}]]></cell>
+    </row>
+    {% endfor %}
+</rows>
+
+        

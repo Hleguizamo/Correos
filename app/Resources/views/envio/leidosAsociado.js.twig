@@ -1,0 +1,24 @@
+<script type="text/javascript">
+    jQuery().ready(function (){
+        jQuery("#GrillaLecturas").jqGrid({
+            url: '{{ path('envio_leidos_asociadoXml') }}?idAsociado={{idAsociado}}&idEnvio={{idEnvio}}',
+            datatype: "xml",
+            colNames:['FECHA','ASUNTO','EMAIL','DIR. IP'],
+            colModel:[
+                    {name:'fecha', index:'el.fecha', width:70,align:'center'},
+                    {name:'asunto', index:'el.asunto'},
+                    {name:'email', index:'el.email'},
+                    {name:'ip', index:'el.ip', width:45,align:'center'}
+            ],
+            rowNum: 50,
+            width: 1080,
+            rowList: [100,200,300,400],
+            pager: '#pGrillaLecturas',
+            sortname: 'el.fecha',
+            viewrecords: true,
+            sortorder: "DESC",
+            height:($(window).height()-170),
+            toolbar: [false]
+        });     
+    });
+</script>

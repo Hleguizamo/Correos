@@ -1,0 +1,24 @@
+<script type="text/javascript">
+    jQuery().ready(function (){
+        jQuery("#GrillaLecturas").jqGrid({
+            styleUI : 'Bootstrap',
+            url: '{{ path('envio_leidos_proveedorXml') }}?idProveedor={{idProveedor}}&idEnvio={{idEnvio}}',
+            datatype: "xml",
+            colModel:[
+                    {label:'FECHA',name:'fecha', index:'p.fecha', width:70,align:'center',},
+                    {label:'ASUNTO',name:'asunto', index:'P.asunto'},
+                    {label:'EMAIL',name:'email', index:'p.email'},
+                    {label:'DIR. IP',name:'ip', index:'p.ip', width:45,align:'center',}
+            ],
+            rowNum: 50,
+            width: 1080,
+            rowList: [100,200,300,400],
+            pager: '#pGrillaLecturas',
+            sortname: 'fecha',
+            viewrecords: true,
+            sortorder: "DESC",
+            height:($(window).height()-170),
+            toolbar: [false]
+        });     
+    });
+</script>

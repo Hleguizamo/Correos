@@ -1,0 +1,175 @@
+  
+  <div class="row">
+    <div class="col-sm-12">
+      <div id="rootwizard"> 
+        <ul>
+          <li><a href="#tab1" data-toggle="tab">DATOS BÁSICOS</a></li>
+          <li><a href="#tab2" data-toggle="tab" >CARGAR ARCHIVOS</a></li>
+          <li><a href="#tab3" data-toggle="tab" id="btnVerArchivos" >VER ARCHIVOS</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="tab-content">
+
+        <div class="tab-pane" id="tab1"> 
+
+          <form class="form-horizontal" id="formEnvio">
+
+            <div class="row">
+
+              <div class="col-xs-4">
+                <div class="control-group">
+                  <label class="control-label">{{ form_label(form.asunto) }}</label>
+                  <div class="controls">
+                    {{ form_widget(form.asunto ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xs-4">
+                <div class="control-group">
+                  <label class="control-label">{{ form_label(form.grupo) }}</label>
+                  <div class="controls">
+                    {{ form_widget(form.grupo ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xs-4">
+                <div class="control-group">
+                  <label class="control-label">{{ form_label(form.columnaCombinacion) }}</label>
+                  <div class="controls">
+                    {{ form_widget(form.columnaCombinacion ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="row">
+
+              <div class="col-xs-12">
+                <div class="control-group">
+                  <label class="control-label">{{ form_label(form.contenido) }}</label>
+                  <div class="controls">
+                    {{ form_widget(form.contenido ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="row">
+              
+              <div class="col-xs-12">
+                <div class="control-group">
+                  <label class="control-label">{{ form_label(form.estado) }}</label>
+                  <div class="controls">
+                    {{ form_widget(form.estado ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-actions text-center" style="margin-top:15px; ">
+              <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o"></i> GUARDAR</button>
+            </div>
+
+          </form>
+
+        </div>    
+
+        <div class="tab-pane" id="tab2">
+          <a href="http://correos.coopidrogas.com.co/uploads/archivoCombinacion.csv" target="_blank" class="btn btn-primary" type="submit"><i class="fa fa-download" aria-hidden="true"></i>
+ Descargar Formato Proveedor</a> <a href="http://correos.coopidrogas.com.co/uploads/archivoCombinacionAsociados.csv" target="_blank" class="btn btn-primary" type="submit"><i class="fa fa-download" aria-hidden="true"></i>
+ Descargar Formato Asociado</a>
+          {{ render( controller('WABackendBundle:ArchivosAdjuntos:formSubirArchivos',{'envio':envio.id }) ) }}
+        </div> 
+
+        <div class="tab-pane" id="tab3">
+          <div class="row">
+            <div class="col-md-12 text-center" id="verArchivos">
+            </div>
+          </div>
+        </div> 
+
+    </div> 
+  </div> 
+
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+  $('#formEnvio').submit(function () {
+
+    //CKEDITOR
+    var descripcion=CKEDITOR.instances['envio_contenido'].getData();
+        
+    if(descripcion =='' ){
+      AlertaPersonalizable('Porfavor indique una descripción en el mensaje.',1200,'warning');
+      return false;
+    }
+
+    $('#envio_contenido').val(descripcion);
+
+    noty({layout: 'center', text: 'Cargando interfaz, por favor espere...<br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom "></i></center>', modal: true, type: 'alert', timeout: false, closeWith: ['none']});
+
+    $.ajax({
+      url: '{{ path('envio_edit',{id:envio.id}) }}',
+      data: $('#formEnvio').serialize(),
+      type: 'post',
+      statusCode:{
+        200:function(data){
+
+          $('#idTituloModalLg').html('EDITAR MENSAJE');
+          $("#idBodyModalLg").empty().load(Routing.generate('envio_edit',{id: data['id']}),function(){
+              $.noty.closeAll();
+          });
+
+          reloadGrid();
+          AlertaPersonalizable('El Mensaje se edito correctamente.', 1500, 'information');
+
+          $.noty.closeAll();
+ 
+        },500:function(){
+          MensajeConfirmacionError('Se produjo un error al realizar la acción. Por favor recargue la página e intente de nuevo.');
+        $.noty.closeAll();
+        }
+      }
+    });
+    return false;
+  });
+
+  //CKEDITOR
+  CKEDITOR.replace('envio_contenido');
+  CKEDITOR.config.height = 120;
+  //CKEDITOR.config.extraPlugins = 'uploadimage,uploadwidget,filetools,notificationaggregator,widget,notification,toolbar,button,filebrowser,popup';
+  CKEDITOR.config.filebrowserBrowseUrl = '/uploads/';
+  CKEDITOR.config.filebrowserUploadUrl = '/uploads/';
+  
+  
+
+  //switch
+  $("#envio_estado").bootstrapSwitch({
+    size:'large',
+    labelText:'estado',
+    onText:'ACTIVO',
+    offText:'INACTIVO',
+    onColor: 'success'
+  });
+
+  $('#rootwizard').bootstrapWizard();
+
+  $('#btnVerArchivos').click(function(){
+
+    $('#verArchivos').empty().html('<i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i>').load('{{ path("archivos_adjuntos_listar") }}');
+
+  });
+
+});
+</script>

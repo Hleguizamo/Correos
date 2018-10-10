@@ -1,0 +1,74 @@
+{% extends '::base.html.twig' %}
+{% block stylesheets %}
+{{ parent() }}
+  <link rel="stylesheet" href="{{ asset('css/jqgrid/ui.jqgrid-bootstrap.css') }}" />
+
+  <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/bootstrap-switch.min.css') }}" />
+
+  <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/fileinput.min.css') }}" />
+
+{% endblock %}
+{% block body %}
+{% include 'menu.html.twig' ignore missing %}
+
+  <table id="grilla"></table>
+  <div id="pGrilla"></div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content" id="modalContent">
+        <div class="modal-header">
+          <h4 class="modal-title bg-primary text-center"  id='idTituloModal'></h4>
+        </div>
+        <div class="modal-body" id="idBodyModal"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal lg -->
+  <div class="modal fade" id="modalLg" role="dialog">
+    <div class="modal-dialog modal-lg modalDetalle">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="idTituloModalLg"></h4>
+        </div>
+        <div class="modal-body" id="idBodyModalLg">
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ asset('js/jqgrid/jquery.jqGrid.min.js') }}"></script>
+  <script src="{{ asset('js/jqgrid/i18n/grid.locale-es.js') }}"></script>
+
+  <script type="text/javascript" src="{{ asset('js/bootstrap-wizard/jquery.bootstrap.wizard.js') }}"></script>
+
+  <script type="text/javascript" src="{{ asset('ckeditor/ckeditor.js') }}"></script>
+
+  <script type="text/javascript" src="{{ asset('js/bootstrap-switch.min.js') }}"></script>
+
+  <script type="text/javascript" src="{{ asset('js/bootstrap-wizard/jquery.bootstrap.wizard.min.js') }}"></script>
+
+  <script type="text/javascript" src="{{ asset('js/fileinput.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/es.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/fa.js') }}"></script>
+
+  {% if permiso['envio'] is defined %}
+    {% include 'envio/index.js.twig' ignore missing %}
+  {% endif %}
+
+{% endblock %}

@@ -1,0 +1,60 @@
+/*
+Acordion Planes, la idea es permitir hacer uso del Icono que se carga desde el administrador.
+*/
+/* 
+    Created on : 01/10/2014, 09:01:55 AM
+    Author     : Alejandro Ardila Ardila <alejandro@waplicaciones.co>
+*/
+.accordion-container {
+    width: 100%;
+    margin: 0 0 4px;
+    clear: both;
+}
+.accordion-toggle {
+    position: relative;
+    display: block;
+    padding: 20px;
+    font-size: 1.5em;
+    font-weight: 300;
+    background: #31A5D5;
+    color: #fff;
+    text-decoration: none;
+}
+.accordion-toggle.open {
+    background: #88C046;
+    color: #fff;
+}
+.iniciarpedidoPlan{
+    margin-top:-4px;float: right;margin-right:25px;cursor:pointer;color:#FF6801;
+}
+.accordion-toggle:hover {
+    background: #E23A51;
+}
+.accordion-toggle span.toggle-icon {
+    position: absolute;
+    right: 20px;
+    font-size: 1.5em;cursor:pointer;
+}
+.accordion-content {
+    display: none;
+    padding: 20px;
+    overflow: auto;
+    background-color: #eee;
+    border-color: rgba(45, 112, 145, 0.3);
+    color: #2d7091;
+}
+.accordion-content img {
+    display: block;
+    float: left;
+    margin: 0 15px 10px 0;
+    max-width: 100%;
+    height: auto;
+}
+     
+/* media query for mobile */
+@media (max-width: 767px) {
+    .accordion-content {
+        padding: 10px 0;
+        overflow: inherit;
+    }
+}

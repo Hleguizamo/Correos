@@ -1,0 +1,236 @@
+<script type="text/javascript">
+
+$().ready(function (){
+  $("#grilla").jqGrid({
+    styleUI : 'Bootstrap',
+    url:'{{path("envio_xml")}}',
+    datatype: "xml",
+    colModel: [
+
+      { label: 'ID', name:'id',index:'e.id', hidden: true},
+      { label: 'ASUNTO', name: 'asunto',index:'e.asunto' },
+      { label: 'ADJUNTOS', name: 'adjuntos',index:'e.adjuntos',width:60, align:'center' },
+      { label: '# ENVIOS', name: 'cantidadEnviados',index:'e.cantidadEnviados',width:60, align:'center'},
+      { label: 'GRUPO', name: 'grupo',index:'g.nombre'},
+      { label: 'POR', name: 'administrador',index:'a.nombre',width:100 },
+      { label: 'ENVIAR', name: 'usuario',index:'e.usuario',width:60, align:'center', sortable : false, },
+      { label: 'VER',width:60, align:'center', sortable : false,}
+    ],
+    autowidth:true,
+    rowNum: 100,
+    autowidth: true,
+    rowList: [100,200,300,400],
+    pager: '#pGrilla',
+    sortname: 'e.id',
+    viewrecords:true,
+    sortorder: "DESC",
+    height:($(document).height()-120)
+    ,ondblClickRow: function(ids) { 
+      {% if permiso['envio']['permiso'] ==1 or permiso['envio']['permiso'] ==2 %}
+
+      dataRow = $(this).getRowData(ids); 
+      
+      if(dataRow.cantidadEnviados == 0){
+          
+          noty({layout:'center',text:'<strong>Cargando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']}); 
+          
+            $('#idTituloModalLg').html('EDITAR MENSAJE');
+            $("#modalLg").modal();
+            $("#idBodyModalLg").empty().load(Routing.generate('envio_edit',{id: dataRow.id}),function(){
+                $.noty.closeAll();
+            });
+      }else{
+          AlertaPersonalizable('Por seguridad no se permite editar un envio si este ya se inicio.',1100,'warning'); 
+      }
+      
+
+
+
+      {%endif%}
+    },
+    loadComplete:function(){
+
+        $('.ver').click(function(){
+            var id = $(this).attr('id').split('_')[1];
+            data = $("#grilla").getRowData(id);
+
+            {#$(".modalDetalle").animate({"width":$(window).width() - 50},600,'linear');
+            $('#idTituloModalLg').empty().html('<strong>Destinatarios del Envío [<b>'+data.asunto+'</b>]</strong>');
+        
+            $('#idBodyModalLg').empty().load('{{path('envio_destinatarios')}}?idEnvio='+data.id, function(){
+                $("#modalLg").modal('show');
+                $.noty.closeAll();
+            });#}
+    
+            noty({layout:'center',text:'Cargando, por favor espere...<br><center><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});
+
+                window.location.href = '{{path('envio_destinatarios')}}?idEnvio='+data.id;
+
+        });
+        {% if permiso['envio']['permiso'] ==1 or permiso['envio']['permiso'] ==2 %}
+          $('.enviar').click(function(){
+
+            noty({layout:'center',text:'<strong>Cargando. Por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});  
+              
+              var id = $(this).val();
+              var data = $('#grilla').getRowData(id);
+
+              $('#idTituloModalLg').html(data.asunto);
+              $('#idBodyModalLg').empty().load( Routing.generate('envio_pre_visualizacion',{'id':id}) , function(){
+                  $("#modalLg").modal('show');
+                  $.noty.closeAll();
+              });
+
+          });
+        {%endif%}
+    }
+  });
+  // activate the build in search with multiple option
+  $('#grilla').navGrid("#pGrilla", {                
+      search: true, // show search button on the toolbar
+      add: false,
+      edit: false,
+      del: false,
+      refresh: true
+    },
+  {}, // edit options
+  {}, // add options
+  {}, // delete options
+  { multipleSearch: true } // search options - define multiple search
+  );
+
+  {% if permiso['envio']['permiso'] ==1  %}  
+
+  $("#grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-success"><i class="fa fa-plus-square"></i> NUEVO</span>',title:'Nuevo Mensaje.', buttonicon:'none', onClickButton:function(){ 
+
+    noty({layout:'center',text:'<strong>Cargando. Por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});  
+
+    $('#idTituloModalLg').html('NUEVO MENSAJE');
+
+    $("#modalLg").modal();
+    $("#idBodyModalLg").empty().load( Routing.generate('envio_new'),function(){
+        $.noty.closeAll();
+    });
+
+  }});
+
+  {% endif %}
+
+  {% if permiso['envio']['permiso'] ==1 or permiso['envio']['permiso'] ==2 %} 
+
+    $("#grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-primary"><i class="fa fa-pencil"></i> EDITAR</span>',title:'Editar Administrador', buttonicon:'none', onClickButton:function(){ 
+
+        var gsr = $("#grilla").jqGrid('getGridParam','selrow'); 
+
+        if(gsr){
+            
+          var data = $('#grilla').getRowData(gsr);
+          console.log(data.cantidadEnviados);
+          if(data.cantidadEnviados == 0){
+              
+              noty({layout:'center',text:'<strong>Cargando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});  
+          dataRow = $("#grilla").getRowData(gsr);
+
+            $('#idTituloModalLg').html('EDITAR MENSAJE');
+            $("#modalLg").modal();
+            $("#idBodyModalLg").empty().load(Routing.generate('envio_edit',{id: dataRow.id}),function(){
+                $.noty.closeAll();
+            });
+            
+          }else{
+              AlertaPersonalizable('Por seguridad no se permite editar un envio si este ya se inicio.',1100,'warning'); 
+          }
+
+        } 
+        else { 
+          AlertaPersonalizable('Por favor seleccione la fila a editar.',900,'warning'); 
+        } 
+
+    }});
+    $("#grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-primary"><i class="fa fa-eye"></i> PRE-VISUALIZACION</span>',title:'previsualizacion', buttonicon:'none', onClickButton:function(){ 
+
+        var gsr = $("#grilla").jqGrid('getGridParam','selrow'); 
+
+        if(gsr){
+            
+          var data = $('#grilla').getRowData(gsr);
+          noty({layout:'center',text:'<strong>Cargando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});  
+          dataRow = $("#grilla").getRowData(gsr);
+
+          $('#idTituloModalLg').html('PRE-VISUALIZACION MENSAJE');
+          $("#modalLg").modal();
+          $("#idBodyModalLg").empty().load('{{path('envio_vistaPreviaMensajes')}}?Tipo=proveedor&envioId='+dataRow.id,function(){
+              $.noty.closeAll();
+          });
+
+        } 
+        else { 
+          AlertaPersonalizable('Por favor seleccione la fila a ser pre-visualizada',900,'warning'); 
+        } 
+
+    }});
+  {% endif %}
+
+{% if permiso['envio']['permiso'] ==1  %} 
+
+$("#grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-danger"><i class="fa fa-trash"></i> ELIMINAR</span>', buttonicon:'none',title:'Eliminar administrador', onClickButton:function(){ 
+
+  var gsr = $("#grilla").jqGrid('getGridParam','selrow'); 
+  if(gsr){
+    dataRow = $("#grilla").getRowData(gsr);
+    if (dataRow.cantidadEnviados==0) {
+      noty({
+        layout : 'center',
+        text: '<div style="text-align:justify;">¿ Desea eliminar el envio  ['+dataRow.asunto+'] ?</div>',
+        modal : true,
+        buttons: [
+        {addClass: ' btn  btn-danger', text: 'ACEPTAR', onClick: function($noty) {
+        $noty.close();
+
+            $.ajax({
+              url: Routing.generate('envio_delete',{'id': dataRow.id}),
+              method:'GET',
+              beforeSend:function(){
+                noty({layout:'center',text:'<strong>Cargando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']}); 
+              },
+              statusCode:{
+                200:function(){
+                  reloadGrid();
+                  $.noty.closeAll();
+                  AlertaPersonalizable('El registro se elimino correctamente',850,'information');  
+                },
+                500:function(){
+                  $.noty.closeAll();
+                  MensajeConfirmacionError('Se produjo un error al realizar la acción. Porfavor recargue la página e intente de nuevo.');
+                }
+              }
+            });                               
+          }},
+          {addClass: ' btn btn-default', text: 'CANCELAR', onClick: function($noty) {
+            $noty.close();
+          }}
+        ],
+          type : 'confirm',
+          animation: {
+          open: 'animated bounceInLeft', // Animate.css class names
+          close: 'animated bounceOutLeft', // Animate.css class names
+          easing: 'swing', // unavailable - no need
+          speed: 500 // unavailable - no need
+        }
+      });
+    }else{
+      AlertaPersonalizable('No se puede eliminar los envios que esten iniciados.',900,'warning');   
+    }
+      
+  }else{
+    AlertaPersonalizable('Porfavor seleccione la fila a eliminar.',900,'warning');   
+  }
+
+
+}}); 
+{% endif %}  
+
+
+});
+function reloadGrid(){$("#grilla").trigger("reloadGrid");}
+</script>

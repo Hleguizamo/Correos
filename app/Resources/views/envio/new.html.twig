@@ -1,0 +1,122 @@
+<form class="form-horizontal" id="formEnvio">
+
+  <div class="row">
+
+    <div class="col-xs-4">
+      <div class="control-group">
+        <label class="control-label">{{ form_label(form.asunto) }}</label>
+        <div class="controls">
+          {{ form_widget(form.asunto ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-4">
+      <div class="control-group">
+        <label class="control-label">{{ form_label(form.grupo) }}</label>
+        <div class="controls">
+          {{ form_widget(form.grupo ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-4">
+      <div class="control-group">
+        <label class="control-label">{{ form_label(form.columnaCombinacion) }}</label>
+        <div class="controls">
+          {{ form_widget(form.columnaCombinacion ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row">
+
+    <div class="col-xs-12">
+      <div class="control-group">
+        <label class="control-label">{{ form_label(form.contenido) }}</label>
+        <div class="controls">
+          {{ form_widget(form.contenido ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row">
+    
+    <div class="col-xs-12">
+      <div class="control-group">
+        <label class="control-label">{{ form_label(form.estado) }}</label>
+        <div class="controls">
+          {{ form_widget(form.estado ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="form-actions text-center" style="margin-top:15px; ">
+    <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o"></i>CREAR</button>
+  </div>
+
+</form>
+<script type="text/javascript">
+$(document).ready(function () {
+
+  $('#formEnvio').submit(function () {
+
+    //CKEDITOR
+    var descripcion=CKEDITOR.instances['envio_contenido'].getData();
+        
+    if(descripcion =='' ){
+      AlertaPersonalizable('Porfavor indique una descripción en el mensaje.',1200,'warning');
+      return false;
+    }
+
+    $('#envio_contenido').val(descripcion);
+
+    noty({layout: 'center', text: 'Cargando interfaz, por favor espere...<br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom "></i></center>', modal: true, type: 'alert', timeout: false, closeWith: ['none']});
+
+    $.ajax({
+      url: '{{ path('envio_new') }}',
+      data: $('#formEnvio').serialize(),
+      type: 'post',
+      statusCode:{
+        200:function(data){
+
+          $('#idTituloModalLg').html('EDITAR MENSAJE');
+          $("#idBodyModalLg").empty().load(Routing.generate('envio_edit',{id: data['id']}),function(){
+              $.noty.closeAll();
+          });
+
+          reloadGrid();
+          AlertaPersonalizable('El Mensaje se registro correctamente.', 1500, 'information');
+
+          $.noty.closeAll();
+ 
+        },500:function(){
+          MensajeConfirmacionError('Se produjo un error al realizar la acción. Por favor recargue la página e intente de nuevo.');
+        $.noty.closeAll();
+        }
+      }
+    });
+    return false;
+  });
+
+  //CKEDITOR
+  CKEDITOR.replace('envio_contenido');
+  CKEDITOR.config.height = 120;  
+
+  //switch
+  $("#envio_estado").bootstrapSwitch({
+    size:'large',
+    labelText:'estado',
+    onText:'ACTIVO',
+    offText:'INACTIVO',
+    onColor: 'success'
+  });
+
+});
+</script>

@@ -1,0 +1,23 @@
+<style>
+    .tablaDatos {margin:0px;padding:0px;width:100%;border:1px solid #7f7f7f;-moz-border-radius-bottomleft:0px;-webkit-border-bottom-left-radius:0px;border-bottom-left-radius:0px;-moz-border-radius-bottomright:0px;-webkit-border-bottom-right-radius:0px;border-bottom-right-radius:0px;-moz-border-radius-topright:0px;-webkit-border-top-right-radius:0px;border-top-right-radius:0px;-moz-border-radius-topleft:0px;-webkit-border-top-left-radius:0px;border-top-left-radius:0px;}.tablaDatos table{border-collapse:collapse;border-spacing:0;width:100%;height:100%;margin:0px;padding:0px;}.tablaDatos tr:last-child td:last-child {-moz-border-radius-bottomright:0px;-webkit-border-bottom-right-radius:0px;border-bottom-right-radius:0px;}.tablaDatos table tr:first-child td:first-child {-moz-border-radius-topleft:0px;-webkit-border-top-left-radius:0px;border-top-left-radius:0px;.tablaDatos table tr:first-child td:last-child {-moz-border-radius-topright:0px;-webkit-border-top-right-radius:0px;border-top-right-radius:0px;}.tablaDatos tr:last-child td:first-child{-moz-border-radius-bottomleft:0px;-webkit-border-bottom-left-radius:0px;border-bottom-left-radius:0px;}.tablaDatos tr:hover td{}}.tablaDatos tr:nth-child(odd){background-color:#aad4ff;}.tablaDatos tr:nth-child(even){background-color:#ffffff;}.tablaDatos td{vertical-align:middle;border:1px solid #7f7f7f;border-width:0px 1px 1px 0px;text-align:left;padding:7px;font-size:10px;font-family:Arial;font-weight:normal;color:#000000;}.tablaDatos tr:last-child td{border-width:0px 1px 0px 0px;}.tablaDatos tr td:last-child{border-width:0px 0px 1px 0px;}.tablaDatos tr:last-child td:last-child{border-width:0px 0px 0px 0px;}.tablaDatos tr:first-child td{background:-o-linear-gradient(bottom,#005fbf 5%,#005fbf 100%);background:-webkit-gradient(linear,left top,left bottom,color-stop(0.05, #005fbf),color-stop(1,#005fbf));background:-moz-linear-gradient( center top, #005fbf 5%, #005fbf 100% );filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#005fbf",endColorstr="#005fbf");background:-o-linear-gradient(top,#005fbf,005fbf);background-color:#005fbf;border:0px solid #7f7f7f;text-align:center;border-width:0px 0px 1px 1px;font-size:14px;font-family:Arial;font-weight:bold;color:#ffffff;}.tablaDatos tr:first-child:hover td{background:-o-linear-gradient(bottom,#005fbf 5%,#005fbf 100%);background:-webkit-gradient(linear,left top,left bottom,color-stop(0.05,#005fbf),color-stop(1,#005fbf));background:-moz-linear-gradient(center top,#005fbf 5%,#005fbf 100% );filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#005fbf",endColorstr="#005fbf");background:-o-linear-gradient(top,#005fbf,005fbf);background-color:#005fbf;}.tablaDatos tr:first-child td:first-child{border-width:0px 0px 1px 0px;}.tablaDatos tr:first-child td:last-child{border-width:0px 0px 1px 1px;}
+</style>
+<div><b>Para:</b>
+    {%if usuarioTipo=='proveedor'%}
+        {{destinatario.empresa}} - {{destinatario.nombre}} => [{{destinatario.email1}} ]
+    {%else%}
+        {%if tipoGrupo==1%}
+            {{destinatario.asociado}} - {{destinatario.emailAsociado}}
+        {%else%}
+            {{destinatario.drogueria}} - {{destinatario.email}}
+        {%endif%}
+    {%endif%}
+</div>
+<div>
+    <b>Asunto:</b> {{entity.asunto}}
+</div>
+Mensaje:
+<div style="border:1px solid #DDD;min-width:4em;padding:.2em;overflow:auto;max-height:300px;">{{contenido|raw}}</div>
+<div>
+    <span class="uk-text-warning">Adjuntos:</span><br>
+    {%for adjunto in adjuntos%}<a href="../../adjuntos/{{entity.id}}/{{carpetaAdmin}}/otros/{{adjunto}}">{{adjunto}}</a><br>{%endfor%}
+</div>

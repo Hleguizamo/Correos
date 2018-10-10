@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/jqgrid/ui.jqgrid-bootstrap.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/bootstrap-switch.min.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/fileinput.min.css') }}" />
+{% endblock stylesheets %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/jqgrid/i18n/grid.locale-es.js') }}"></script>
+    <script src="{{ asset('js/jqgrid/jquery.jqGrid.min.js') }}"></script>
+    <script src="{{ asset('js/fileinput.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/bootstrap-switch.min.js') }}"></script>
+{% endblock javascripts %}
+{% block body %}
+	{% include 'menu.html.twig' ignore missing %}
+	{% include ':grupo:asignadopro.js.twig' %}
+	<ol class="breadcrumb">
+      <li><a href="{{path('grupo')}}">Grupos</a></li>
+      <li class="active">Provedores Asignados</li>
+    </ol>
+	<table id="GrillaAsignado"></table>
+	<div id="pGrillaAsignado"></div>
+	<script>
+	    $(document).ready(function() {
+	        {#$('#tabs .tabscontent>div').not('div:first').hide();
+	        $('#tabs ul li:first,#tabs .tabscontent>div:first').addClass('active');
+	        $('#tabs ul li a').click(function(){
+	            var currentTab = $(this).parent();
+	            if(!currentTab.hasClass('active')){
+	                $('#tabs ul li').removeClass('active');				
+	                $('#tabs .tabscontent>div').slideUp('fast').removeClass('active');
+	                var currentcontent = $($(this).attr('href'));
+	                currentcontent.slideDown('fast', function() {
+	                        currentTab.addClass('active');
+	                        currentcontent.addClass('active');
+	                });
+	            }
+	            return false;							
+	        });
+	        $('#dialogDestinatarios').dialog({autoOpen:false,modal:true});#}
+	    });
+	    function reloadGrid(identificador){
+	        $(identificador).trigger("reloadGrid");
+	    }
+	    function ConsultaActualGrillas(identificadorGrilla){
+	    var pd =$(identificadorGrilla).getGridParam("postData");
+	    var r="";
+	    var control=0;
+	    $.each(pd,function(i){
+	        if(control>0)r+="&";
+	        r+=i+"="+pd[i];control++;
+	    });
+	    return r;}
+	</script>
+{% endblock %}

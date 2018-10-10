@@ -1,0 +1,15 @@
+{
+    "folders":
+    [
+        {
+            "follow_symlinks": true,
+            "path": "c:\apps\correos2016\web\"
+        }
+    ],
+    "settings": {
+        "xdebug": {
+             "url": "http://127.0.0.1/correos2016/app_dev.php",
+             "super_globals": true
+        }
+    }
+}

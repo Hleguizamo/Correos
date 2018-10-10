@@ -1,0 +1,109 @@
+<div class="row">
+	<div class="col-md-12">
+		<h3>Archivo de combinación CSV</h3>
+	  <table class="table table-striped table-condensed">
+	    <thead>
+	      <tr>
+	        <th>ARCHIVO</th>
+	        <th>TAMAÑO</th>
+	        <th>ACCIÓN</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	    	<tr>
+		    	{% if csv['peso'] is defined %}
+		        <td>{{csv['archivo'] }}</td>
+		        <td>{{csv['peso']}} bytes </td>
+		        <td>
+		        	<i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom load"  id="csvload"></i>
+		        	<button type="button" class="btn btn-xs btn-primary eliminar" id="csv" title="Descartar" value="{{csv['archivo']}}">X</button>
+		        </td>
+					{% else %}
+						<td rowspan="3">
+							{% if csv['error'] is defined %}
+								{{csv['error']}}
+							{% else %}
+								No hay CSV cargado actualmente.
+							{% endif %}
+						</td>
+					{% endif %}
+			  </tr>
+		    
+	    </tbody>
+	  </table>
+	 </div>
+</div>
+
+
+<div class="row">
+	<div class="col-md-12">
+		<h3>Archivos adjuntos</h3>
+	  <table class="table table-striped table-condensed">
+	    <thead>
+	      <tr>
+	        <th>ARCHIVO</th>
+	        <th>TAMAÑO</th>
+	        <th>ACCIÓN</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	    	{% set contador = 0 %}
+	    	{% for archivo in otros %}
+		      <tr id="{{contador}}tr">
+		        <td>{{archivo['nombre'] |slice(0, 50) }}</td>
+		        <td>{{archivo['peso']}} bytes </td>
+		        <td>
+		        	<span class="load" id="{{contador}}load"> <i class="fa fa-spinner fa-spin fa-fw margin-bottom" ></i> </span>
+		        	<button type="button" class="btn btn-xs btn-primary eliminar" id="{{contador}}" value="{{archivo['nombre']}}" title="Descartar">X</button>
+		        </td>
+		      </tr>
+		      {% set contador = contador + 1 %}
+		    {% endfor %}
+	    </tbody>
+	    <tfooter>
+	    	<tr>
+	    		<td rowspan="3">
+	    			<b>Peso total : &nbsp;</b> {% if peso > 0 %}{{ ( peso / 1000000 ) | number_format(2, '.')  }} MB {% else %}0{% endif %}
+	    		</td>
+	    	</tr>
+	    </tfooter>
+	  </table>
+	 </div>
+</div>
+<script type="text/javascript">
+	$().ready(function(){
+		reloadGrid();
+		$('.load').hide();
+
+		$('.eliminar').click( function(){
+
+			$(this).attr('disabled',true);
+			
+			var archivo=$(this).val();
+			var id=$(this).attr('id');
+			var opcion=( id == 'csv' )?1:2;
+			
+			$.ajax({
+				url:'{{ path("archivos_adjuntos_eliminar") }}',
+				method:'post',
+				data:{'archivo':archivo,'opcion':opcion},
+				beforeSend:function(){	
+					$('#'+id+'load').show();			
+				},
+				statusCode:{
+					200:function(){
+						reloadGrid();
+						AlertaPersonalizable('Archivo eliminado.',1000,'information');
+						$('#verArchivos').empty().html('<i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i>').load('{{ path("archivos_adjuntos_listar") }}');
+					},
+					500:function(){
+						$(this).attr('disabled',false);
+					}
+				}
+
+			});
+
+		} );
+
+	});
+</script>

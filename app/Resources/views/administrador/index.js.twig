@@ -1,0 +1,208 @@
+<script type="text/javascript">
+
+$().ready(function (){
+  $("#grilla").jqGrid({
+    styleUI : 'Bootstrap',
+    url:'{{path("administradores_xml")}}',
+    datatype: "xml",
+    colModel: [
+      { label: 'ID', name:'id',index:'a.id', hidden: true},
+      { label: 'NOMBRE', name: 'nombre', key: true,index:'a.nombre' },
+      { label: 'USUARIO', name: 'usuario',index:'a.usuario'},
+      { label: 'CORREO', name: 'correo',index:'a.email' },
+      {
+        label: 'ESTADO',  name: 'activo',index:'a.activo',
+        stype: "select",
+        searchoptions: { value: "1:Activo;0:Inactivo" }  
+      },
+      {
+        label: "FECHA CREADO",
+        align: "center",
+        name: 'fechaCreado',
+        index: "a.fechaCreado",
+        width: 90,
+        sorttype: 'date',
+        searchoptions: {
+          dataInit: function (element) {
+             $(element).datepicker({
+                  autoclose: true,
+                  format: 'yyyy-mm-dd',
+                  language: 'es',
+                  orientation : 'bottom'
+              });
+          }
+        }
+      }
+    ],
+    autowidth:true,
+    rowNum: 100,
+    autowidth: true,
+    rowList: [100,200,300,400],
+    pager: '#pGrilla',
+    sortname: 'a.usuario',
+    viewrecords:true,
+    sortorder: "ASC",
+    height:($(document).height()-120)
+    ,ondblClickRow: function(ids) { 
+      {% if permiso['administradores']['permiso'] == 1 or permiso['administradores']['permiso'] == 2 %}
+
+      noty({layout:'center',text:'<strong>Cargando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']}); 
+
+      dataRow = $(this).getRowData(ids); 
+
+      $('#idTituloModal').html('EDITAR ADMINISTRADOR');
+
+      var heightModal=$(document).height();
+      $("#myModal").modal();
+      $("#idBodyModal").empty().load(Routing.generate('administradores_edit',{id: dataRow.id}),function(){
+          $.noty.closeAll();
+          $("#myModal").height(heightModal-70);
+          $("#idBodyModal").height(300);
+          //$("#modalContent").height(heightModal);
+           
+          $("#myModal").css('overflow-y', 'hidden'); 
+          $("#idBodyModal").css('overflowY', 'auto');
+
+      });
+
+
+
+      {%endif%}
+    }
+  });
+  // activate the build in search with multiple option
+  $('#grilla').navGrid("#pGrilla", {                
+      search: true, // show search button on the toolbar
+      add: false,
+      edit: false,
+      del: false,
+      refresh: true
+    },
+  {}, // edit options
+  {}, // add options
+  {}, // delete options
+  { multipleSearch: true } // search options - define multiple search
+  );
+
+  {% if permiso['administradores']['permiso'] == 1  %}  
+
+  $("#grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-success"><i class="fa fa-plus-square"></i> NUEVO</span>',title:'Nuevo Administrador.', buttonicon:'none', onClickButton:function(){ 
+
+    noty({layout:'center',text:'<strong>Cargando. Por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});  
+
+    $('#idTituloModal').html('NUEVO ADMINISTRADOR');
+
+    var heightModal=$(document).height();
+    $("#myModal").modal();
+    $("#idBodyModal").empty().load( Routing.generate('administradores_new'),function(){
+        $.noty.closeAll();
+        $("#myModal").height(heightModal-70);
+        $("#idBodyModal").height(300);
+        //$("#modalContent").height(heightModal);
+         
+        $("#myModal").css('overflow-y', 'hidden'); 
+        $("#idBodyModal").css('overflowY', 'auto');
+    });
+
+  }});
+
+  {% endif %}
+
+  {% if permiso['administradores']['permiso'] == 1 or permiso['administradores']['tipo'] == 2 %} 
+
+    $("#grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-primary"><i class="fa fa-pencil"></i> EDITAR</span>',title:'Editar Administrador', buttonicon:'none', onClickButton:function(){ 
+
+        var gsr = $("#grilla").jqGrid('getGridParam','selrow'); 
+
+        if(gsr){
+
+          noty({layout:'center',text:'<strong>Cargando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});  
+          dataRow = $("#grilla").getRowData(gsr);
+
+          $('#idTituloModal').html('EDITAR ADMINISTRADOR');
+
+          var heightModal=$(document).height();
+          $("#myModal").modal();
+          $("#idBodyModal").empty().load(Routing.generate('administradores_edit',{id: dataRow.id}),function(){
+              $.noty.closeAll();
+              $("#myModal").height(heightModal-70);
+              $("#idBodyModal").height(300);
+              //$("#modalContent").height(heightModal);
+               
+              $("#myModal").css('overflow-y', 'hidden'); 
+              $("#idBodyModal").css('overflowY', 'auto');
+          });
+
+        } 
+        else { 
+          AlertaPersonalizable('Por favor seleccione la fila a editar.',900,'warning'); 
+        } 
+
+    }});
+  {% endif %}
+
+{% if permiso['administradores']['permiso'] == 1  %} 
+
+$("#grilla").jqGrid('navButtonAdd','#pGrilla',{caption:'<span class="text-danger"><i class="fa fa-trash"></i> ELIMINAR</span>', buttonicon:'none',title:'Eliminar administrador', onClickButton:function(){ 
+
+  var gsr = $("#grilla").jqGrid('getGridParam','selrow'); 
+  if(gsr){
+    dataRow = $("#grilla").getRowData(gsr);
+    noty({
+      layout : 'center',
+      text: '<div style="text-align:justify;">¿ Desea eliminar el administrador  ['+dataRow.usuario+'] ?</div>',
+      modal : true,
+      buttons: [
+      {addClass: ' btn  btn-danger', text: 'ACEPTAR', onClick: function($noty) {
+      $noty.close();
+
+          $.ajax({
+            url: Routing.generate('administradores_delete',{'id': dataRow.id}),
+            method:'GET',
+            beforeSend:function(){
+              noty({layout:'center',text:'<strong>Cargando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']}); 
+            },
+            statusCode:{
+              200:function(data){
+
+                $.noty.closeAll();
+
+                if( data['status'] == 2 ){
+                  MensajeConfirmacion('No es posible eliminar el Administrador ya que se encuentra asociado a grupos creados en el sistema.');
+                }else{
+                  AlertaPersonalizable('El registro se elimino correctamente',850,'information'); 
+                  reloadGrid();
+                }
+
+              },
+              500:function(){
+                $.noty.closeAll();
+                MensajeConfirmacionError('Se produjo un error al realizar la acción. Porfavor recargue la página e intente de nuevo.');
+              }
+            }
+          });                               
+        }},
+        {addClass: ' btn btn-default', text: 'CANCELAR', onClick: function($noty) {
+          $noty.close();
+        }}
+      ],
+        type : 'confirm',
+        animation: {
+        open: 'animated bounceInLeft', // Animate.css class names
+        close: 'animated bounceOutLeft', // Animate.css class names
+        easing: 'swing', // unavailable - no need
+        speed: 500 // unavailable - no need
+      }
+    });
+  }else{
+    AlertaPersonalizable('Porfavor seleccione la fila a eliminar.',900,'warning');   
+   }
+
+
+}}); 
+{% endif %}  
+
+
+});
+function reloadGrid(){$("#grilla").trigger("reloadGrid");}
+</script>

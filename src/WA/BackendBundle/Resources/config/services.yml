@@ -1,0 +1,22 @@
+parameters:
+  administrador.login_success_handler.class: WA\BackendBundle\Listener\LoginListener
+
+services:
+    administrador.login_success_handler.class:
+        class: %administrador.login_success_handler.class%
+        public: false
+        arguments:  ['@service_container']
+        
+    utilidadesAdministrador:
+        class: WA\BackendBundle\Services\Util
+        arguments: ["@service_container"]
+
+    busquedaAdministrador:
+        class: WA\BackendBundle\Services\BusquedaGrilla
+        arguments: ["@service_container"]
+
+    wa.twig.wa_extension:
+        class: WA\BackendBundle\Twig\WAExtension
+        arguments: ["@service_container"]
+        tags:
+          - { name: twig.extension }

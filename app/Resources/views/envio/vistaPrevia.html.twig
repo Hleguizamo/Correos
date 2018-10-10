@@ -1,0 +1,197 @@
+<script>
+
+    var enviosArray = new Array();
+
+    {%set enviados=0%}
+    {%set faltantes=0%}
+    {%set cont=0%}
+
+    {% for item in integrantes %}
+
+      {% if item.enviado %}
+
+          {%set enviados=enviados+1%}
+
+      {%else%}
+
+          enviosArray[{{cont}}]='{{item.id}}';
+          {%set faltantes=faltantes+1%}
+          {%set cont=cont+1%}
+
+      {%endif%}
+
+    {%endfor%}
+
+    {%set totalDestino=integrantes|length%}
+
+    var detenido=0;
+    var faltantes={{faltantes}};
+    var enviados=0;
+    var totalDestino={{totalDestino}};
+
+    $().ready(function (){
+
+      {%if controlMensaje%}
+      noty({
+        layout : 'center',
+        text: '<div style="text-align:justify;">Algunos Proveedores y sus respectivos contactos no recibiran la informacion si se encuentran bloqueados. </div>',
+        modal : true,
+        buttons: [
+        {addClass: ' btn  btn-danger', text: 'ACEPTAR', onClick: function($noty) {
+          $noty.close();
+          }}
+        ],
+          type : 'confirm',
+          animation: {
+          open: 'animated bounceInLeft', // Animate.css class names
+          close: 'animated bounceOutLeft', // Animate.css class names
+          easing: 'swing', // unavailable - no need
+          speed: 500 // unavailable - no need
+        }
+      });
+      {%endif%}
+
+      $('#enviar').click(function(){
+
+        detenido=0;
+        $('#enviar').attr('disabled',true);
+        $('#enviar').html('Enviando...');
+        $('#detener').attr('disabled',false);
+        $('#enviadoLoad').html('<i class="fa fa-spinner fa-spin fa-fw margin-bottom"></i>');
+        enviar();
+
+      });
+
+      $('#detener').click(function(){
+
+        $('#detener').attr('disabled',true);
+        $('#enviar').html('ENVIAR');
+        $('#enviar').attr('disabled',false);
+        $('#enviadoLoad').html('');
+        detenido=1;
+
+      });
+    });
+
+    function enviar(){
+
+      if( detenido == 0 && enviados < faltantes ){
+        //alert('envioId: '+{{ envio.id }}+'____destinatarioId: '+enviosArray[enviados]);
+        $.post("{{ path('envio_enviar') }}",{ envioId:{{ envio.id }}, destinatarioId: enviosArray[enviados]},function(data){
+
+          enviados++;
+          //faltantes--;
+          $('#barProgrees').width(parseInt((100 * enviados)/faltantes)*4);
+          $('#barProgrees').html(parseInt((100 * enviados)/faltantes));
+
+          if(data.resultado == 1){
+            if(typeof data.info !== 'undefined'){
+              $('#estadoEnvio').html($('#estadoEnvio').html()+'<br>'+data.info);
+            }
+            
+          }else{
+            $('#estadoEnvio').html($('#estadoEnvio').html()+'<br>'+data.info);
+            $('#detener').attr('disabled',true);
+            $('#enviar').html('ENVIAR');
+            $('#enviar').attr('disabled',false);
+            $('#enviadoLoad').html('');
+            detenido=1;
+          }
+          /*if(data.resultado!=1){
+              $('#estadoEnvio').html($('#estadoEnvio').html()+'<br>'+data.info);
+              $('#detener').attr('disabled',true);
+              $('#enviar').html('ENVIAR');
+              $('#enviar').attr('disabled',false);
+              $('#enviadoLoad').html('');
+              detenido=1;
+          }*/
+          enviar();
+        }, "json");
+
+      }else{
+
+        if(enviados == faltantes){
+            $("#grilla").trigger("reloadGrid");
+            $('#enviar').hide();
+            $('#detener').hide();
+            $('#enviadoLoad').html('Mensajes enviados.');
+        }
+
+        detenido=0;
+        return false;
+      }
+    }
+</script>
+
+<div class="row" >
+  <div class="col-md-12">
+
+     <b>Asunto:</b> {{envio.asunto}}
+
+  </div>
+</div>
+
+<div class="row" >
+  <div class="col-md-12">
+      
+    <table class="table table-striped table-condensed">
+      <thead>
+        <tr class="text-center">
+          <th>TOTAL DESTINATARIOS</th>
+          <th>TOTAL ENVIADOS</th>
+          <th>TOTAL POR ENVIAR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{integrantes|length}}</td>
+          <td>{{enviados}}</td>
+          <td>{{faltantes}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="row" >
+  <div class="col-md-12">
+
+    {% if faltantes > 0 %}
+
+      <button id="enviar" type="button" class="btn btn-primary">Enviar.</button>
+      <button id="detener" type="button" disabled="disabled" class="btn btn-primary">Detener envío.</button>
+
+      <div id="enviadoLoad"></div>
+      <div id="estadoEnvio"></div>
+
+    {% else %}
+
+     <p class="text-center text-warning"> Mensajes enviados al 100%. </p>
+
+    {% endif %}
+
+    {% if enviados > 0 %}
+
+      {% set porcentaje = ( 100 * enviados ) / totalDestino %}
+
+    {% else %}
+
+      {% set porcentaje = 0 %}
+
+    {% endif %}
+    
+    {% set p = '%' %}
+
+  </div>
+</div>
+
+<div class="row" >
+  <div class="col-md-12">
+    
+    <div class="uk-progress">
+        <div id="barProgrees" class="progress-bar-success text-center" style="width: {{porcentaje}}%;">{{ porcentaje | number_format (0, '', '.') }}%</div>
+    </div>
+
+  </div>
+</div>

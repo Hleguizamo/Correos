@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/jqgrid/ui.jqgrid-bootstrap.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/bootstrap-switch.min.css') }}" />
+{% endblock stylesheets %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/jqgrid/i18n/grid.locale-es.js') }}"></script>
+    <script src="{{ asset('js/jqgrid/jquery.jqGrid.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/bootstrap-switch.min.js') }}"></script>
+    {% include ':grupo:index.js.twig' %}
+{% endblock javascripts %}
+{% block body %}
+    {% include 'menu.html.twig' ignore missing %}
+    <table id="Grilla"></table>
+    <div id="pGrilla"></div>
+{% endblock %}

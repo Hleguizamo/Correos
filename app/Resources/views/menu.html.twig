@@ -1,0 +1,59 @@
+<div class="row">
+
+  <div class="col-xs-8">
+  	<ul class="nav nav-tabs"> 
+			<li role="presentation"{% if menu == 'configuracion' %} class="active" {% endif %} ><a href="{{path('configuracion')}}" title="Configuración"> <i class="fa fa-cog" ></i>&nbsp; Configuración</a></li>
+			<li role="presentation" {% if menu == 'envios' %} class="active" {% endif %}> <a href="{{path('envio')}}" title="Envios">	Envios</a></li>
+		  <li role="presentation" {% if menu == 'grupos' %} class="active" {% endif %}> <a href="{{path('grupo')}}" title="Grupos">		Grupos</a></li>
+			<li class="dropdown" role="presentation" > 
+				<a aria-expanded="false" aria-haspopup="true" role="button" href="#" data-toggle="dropdown" class="dropdown-toggle" > 
+					<i class="fa fa-users" aria-hidden="true"></i> &nbsp;  Usuarios. <span class="caret"></span> 
+				</a>
+			  <ul class="dropdown-menu"> 
+			 	  <li><a href="{{path('administradores')}}"> <i class="fa fa-user" ></i> <i class="fa fa-plus" ></i> &nbsp; Administradores</a></li> 
+			 	  <li><a href="{{path('cliente')}}"><i class="fa fa-user" ></i> &nbsp;Clientes</a></li> 
+          <li><a href="{{path('provedores')}}"><i class="fa fa-group" ></i> &nbsp;Proveedores</a></li> 
+			  </ul> 
+			</li> 
+		</ul>
+  </div>
+  <div class="col-xs-4 text-right">
+  	 <button type="button" class="btn btn-danger animation-fade btn-xs" id="cerrarSesion"><i class="fa fa-power-off" ></i></button><br>
+     <img src="{{ asset('images/logoCopidrogas.png') }}">
+  </div>
+
+</div>
+
+
+
+<script type="text/javascript">
+	
+	$().ready(function(){
+		$('#cerrarSesion').click(function(){
+
+			 noty({
+            layout : 'center',
+            modal:true,
+            text: '¿Confirma el cierre de sesión?',
+            buttons: [
+                {addClass: 'btn btn-danger', text: 'ACEPTAR', onClick: function($noty) {
+
+                	noty({layout:'center',text:'<strong>Cerrando sesión. Por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']}); 
+
+                  location.href='{{path("default_logout")}}';
+                  
+                }},
+                {addClass: 'btn btn-primary', text: 'CANCELAR', onClick: function($noty) {
+                    $noty.close();
+                }}
+            ],
+            type : 'alert',
+            animation:{open:'animated flipInX',close : 'animated flipOutX'},
+            timeout: false
+        });
+		});
+
+		
+	});
+
+</script>

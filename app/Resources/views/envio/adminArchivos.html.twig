@@ -1,0 +1,115 @@
+{% if hayExcepcion == false %}
+  <div class="row">  
+    <div class="col-xs-4">
+      <input type="checkbox"  value="1" id="archivosAdjuntos">
+    </div>
+    <div class="col-xs-8">
+      <div class=" ocultarCSV"  style="border:solid 2px #00C231;padding:2px;margin-top:10px;"> <b>Recuerde:</b> Sólo se permite cargar un archivo en formato csv.</div>
+      <div class=" ocultarOtros" style="border:solid 2px #E66711;padding:2px;margin-top:10px;" ><b>Recuerde:</b> Puede cargar multiples archivos con un peso total de 2MB.</div>
+    </div>
+  </div>
+
+  <div class="row">  
+    <div class="col-xs-12">
+      <form enctype="multipart/form-data" id="formCSV" class="ocultarCSV">
+        <div class="form-group text-center">
+            <label class="control-label">SELECCINE EL ARCHIVO</label>
+            <input id="fileCSV"  type="file"  data-preview-file-type="any"  name="csv"  class="file-loading">
+        </div>
+      </form>
+      <form enctype="multipart/form-data" id="formOtro" class="ocultarOtros">
+        <div class="form-group text-center">
+            <label class="control-label">SELECCINE EL ARCHIVO</label>
+            <input id="fileOtros"  type="file"  data-preview-file-type="any"  name="adjuntos[]" multiple class="file-loading" {% if peso >= 2 %}disabled{% endif %}>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script type="text/javascript">
+  $().ready(function(){
+
+  //file input
+  $("#fileCSV").fileinput({
+    uploadUrl: "{{ path('archivos_adjuntos_csv') }}?idEnvio={{envio.id}}",
+    maxFileCount: 1,
+    allowedFileExtensions: ["csv","CSV"],
+    language: "es",
+    showPreview: false,
+    uploadAsync: false
+  });
+
+  $('#fileCSV').on('filebatchuploadsuccess', function(event, data, previewId, index) {
+    
+    AlertaPersonalizable('Archivo cargados correctamente.',1500,'information');           
+    $.noty.closeAll();
+    
+  });
+
+  // CATCH RESPONSE
+  $('#fileCSV').on('filebatchuploaderror', function(event, data, previewId, index) {
+    MensajeConfirmacionError('Ocurrio un error inesperado. Pofavor recargue la página e intentelo nuevamente.');
+  });
+
+    //file input
+  $("#fileOtros").fileinput({
+    uploadUrl: "{{ path('archivos_adjuntos_otros') }}",
+    maxFileCount: 20,
+    allowedFileExtensions: ["xls","pdf","png","jpg","doc","docx","xlsx","txt"],
+    language: "es",
+    showPreview: true,
+    uploadAsync: false,
+    maxFileSize: 2000
+  });
+
+  $('#fileOtros').on('filebatchuploadsuccess', function(event, data, previewId, index) {
+    
+    AlertaPersonalizable('Archivos cargados correctamente.',1500,'information');           
+    $.noty.closeAll();
+    $('#fileOtros').fileinput('reset');  
+
+  });
+
+  // CATCH RESPONSE
+  $('#fileOtros').on('filebatchuploaderror', function(event, data, previewId, index) {
+    MensajeConfirmacionError('Ocurrio un error inesperado. Pofavor recargue la página e intentelo nuevamente.');
+  });
+
+  //swith de archivos adjuntos
+  $("#archivosAdjuntos").bootstrapSwitch({
+    size:'small',
+    labelText:'Adjuntos',
+    onText:'CSV',
+    offText:'Otros',
+    offColor:'warning',
+    onColor: 'success'
+  });
+
+  $('#archivosAdjuntos').bootstrapSwitch('state', true);
+
+  $('.ocultarCSV').show();
+  $('.ocultarOtros').hide();
+
+  $('#archivosAdjuntos').on('switchChange.bootstrapSwitch', function (event, state) {
+    if(state){
+      $('.ocultarCSV').show();
+      $('.ocultarOtros').hide();
+
+    }else{
+      $('.ocultarCSV').hide();
+      $('.ocultarOtros').show();
+    }
+  });
+
+
+  });
+</script>
+{% else %}
+  <div  class="row">
+    <div class="col-md-12 text-center text-danger" >
+      <p>
+        Al parecer el sistema no ha podido acceder a las carpetas del administrador. Por favor pongase en contacto con el Administrador del sistema.
+      </p>
+    </div>
+  </div>
+{% endif %}

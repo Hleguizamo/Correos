@@ -1,0 +1,92 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-6 col-md-10">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Agregar integrantes al grupo.</h3>
+                </div>
+                <div class="panel-body">
+                    <a href="http://correos.coopidrogas.com.co/uploads/cargaproveedor.xls" target="_blank" class="btn btn-primary" type="submit"><i class="fa fa-download" aria-hidden="true"></i>
+ Descargar Formato</a>
+                    La información debe estar bien digitada. <br/>
+                    La carga del archivo puede tardar varios minutos, tenga paciencia...
+                </div>
+            </div>
+        </div>  
+        <form id="form1" action="#" method="post">
+            <div class="col-xs-6 col-md-12">
+                <div class="uk-comment-meta">Solo para proveedores, registrar todos los que coincidan con:<br>
+                    <input type="radio" checked="" value="None" name="tipoRegistro"> No Aplica (si los datos corresponden a Proveedores se cargaran por Nit)<br>
+                    <input type="radio" value="Nit" name="tipoRegistro"> Nit<br>
+                    <input type="radio" value="Email" name="tipoRegistro"> Email
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-12">
+                <div id="btnExamin">
+                    <input type="file" required="required" name="form[archivo]" id="form_archivo">
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-12">
+                <div id="kv-error-1" style="margin-top:10px;display:none"></div>
+                <div id="kv-success-1" class="alert alert-success fade in" style="margin-top:10px;display:none;overflow:auto;max-height:200px;"></div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    var ComoVale='';
+    var ComoBodega='';
+    $("#form_archivo").fileinput({
+        uploadUrl: '{{path('grupo_procesarArchivo')}}', // server upload action
+        uploadAsync: true,
+        showPreview: false,
+        type:'post',
+        dataType:'json',
+        allowedFileExtensions: ['xls','xlsx'],
+        maxFileCount: 5,
+        elErrorContainer: '#kv-error-1',
+        uploadExtraData: function() {
+            return {
+                tipoRegistro: $('input[name=tipoRegistro]:checked').val(),
+                grupoId: {{grupoId}}
+            };
+        }
+    }).on('filebatchpreupload', function(event, data, id, index) {
+        $('#kv-success-1').html('<h4>Estado del cargue</h4><ul></ul>').hide();
+    }).on('fileuploaded', function(event, data, id, index) {
+        var fname = data.files[index].name,
+            out = '<li>' + 'El Achivo ' +  
+                fname + ' se cargo y genero la siguiente repuesta:  <ol type="1"><li> Insertados : '+data.response.insertados+'</li><li> Actualizados : '+data.response.actualizados+'</li></ol>' + '</li> <br/> ';
+        
+        //console.log(data);
+        if(data.response.erroresAsociados){
+            out += '<h4>Errores Destinatarios Asociados</h4><ul>';
+
+            var errorAsociado = data.response.erroresAsociados.split("|");
+            $.each(errorAsociado,function(index, value){
+               out += '<li>'+value+'</li>' ;
+            });
+            out += '</ul>';
+        }
+        
+        if(data.response.errores_proveedor_email){
+            out += '<h4>Errores Destinatarios Proveedores</h4><ul>';
+
+            var errorProveedor = data.response.errores_proveedor_email.split("|");
+            $.each(errorProveedor, function(index, value){
+                out += '<li>'+value+'</li>';
+            });
+            out += '</ul>';
+        }
+        
+        $('#kv-success-1 ul').append(out);
+        $('#kv-success-1').fadeIn('slow');
+        $('#btnExamin').hide();
+    });
+    $('#form1').submit(function(){
+        var file = $('#form_archivo').val();
+        return false; 
+    });
+});
+</script>

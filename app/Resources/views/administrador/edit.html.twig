@@ -1,0 +1,177 @@
+  
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+      <div id="rootwizard"> 
+        <ul>
+          <li><a href="#tab1" data-toggle="tab">DATOS BÁSICOS</a></li>
+          <li><a href="#tab2" data-toggle="tab" id="idEstadosPadre">PERMISOS</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="tab-content">
+
+        <div class="tab-pane" id="tab1"> 
+
+          <form class="form-horizontal" id="formAdministrador">
+            
+              <div class="row">
+
+                <div class="col-xs-4">
+                  <div class="control-group">
+                    <label class="control-label">{{ form_label(form.nombre) }}</label>
+                    <div class="controls">
+                      {{ form_widget(form.nombre ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xs-4">
+                  <div class="control-group">
+                    <label class="control-label">{{ form_label(form.usuario) }}</label>
+                    <div class="controls">
+                      {{ form_widget(form.usuario ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xs-4">
+                  <div class="control-group">
+                    <label class="control-label">Clave</label>
+                    <div class="controls">
+                      <input data-toggle="password" data-placement="before" class="form-control input-sm" type="password" placeholder="Contraseña" name="clave" id="password" required  maxlength="20"   autocomplete="off" value="{{administrador.clave}}">
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="row">
+                  <div class="col-xs-6">
+                    <div class="control-group">
+                      <label class="control-label">{{ form_label(form.email) }}</label>
+                      <div class="controls">
+                        {{ form_widget(form.email ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-6">
+                    <div class="control-group">
+                      <label class="control-label">Clave Email</label>
+                      <div class="controls">
+                        <input data-toggle="password" data-placement="before" class="form-control input-sm" type="password" placeholder="Clave Email" name="claveEmail" id="claveEmail" required   autocomplete="off" value="{{administrador.claveEmail}}">
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+              <div class="row">
+
+                
+
+                <div class="col-xs-6">
+                  <div class="control-group">
+                    <label class="control-label">{{ form_label(form.tipoUsuario) }}</label>
+                    <div class="controls">
+                      {{ form_widget(form.tipoUsuario ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xs-6">
+                  <div class="control-group">
+                    <label class="control-label">Estado</label>
+                    <div class="controls">
+                      {{ form_widget(form.activo ,{"attr":{"class":"form-control  input-sm"}} ) }}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="form-actions text-center" style="margin-top:15px; ">
+                <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o"></i>GUARDAR</button>
+              </div>
+
+              <!-- campos hidden -->
+              <input type="hidden" name="hidUsuario" value="{{administrador.usuario}}">
+  
+          </form>
+
+        </div>    
+
+        <div class="tab-pane" id="tab2">
+          {{ render( controller('WABackendBundle:Administrador:permisos',{'administrador':administrador.id,'accion':1 }) ) }}
+        </div>
+
+      </div> 
+    </div> 
+  </div> 
+
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+  $('#formAdministrador').submit(function () {
+
+    if( $('#password').val().length < 8 ){
+      AlertaPersonalizable('La longitud de la contraseña debe de ser minimo de 8 caracteres.', 1900, 'warning');
+      return false;
+    }
+
+    noty({layout: 'center', text: 'Cargando interfaz, por favor espere...<br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom "></i></center>', modal: true, type: 'alert', timeout: false, closeWith: ['none']});
+
+    $.ajax({
+      url: '{{ path("administradores_edit", {id:administrador.id }) }}',
+      data: $('#formAdministrador').serialize(),
+      type: 'post',
+      statusCode:{
+        200:function(data){
+
+          if (data.status == 1) {
+            reloadGrid();
+            AlertaPersonalizable('El Administrador fue editado correctamente.', 1500, 'information');
+
+            $('#myModal').modal('toggle');
+
+            $.noty.closeAll();
+          }
+          if(data.status == 2)
+            AlertaPersonalizable('La longitud de la contraseña debe de ser minimo de 8 caracteres.', 1900, 'warning');
+
+
+          $.noty.closeAll();
+
+        },500:function(){
+          MensajeConfirmacionError('Se produjo un error al realizar la acción. Por favor recargue la página e intente de nuevo.');
+          $.noty.closeAll();
+        }
+      }
+    });
+    return false;
+  });
+
+  $('#password').password().on('show.bs.password', function(e) {
+    $('#eventLog').text('On show event');
+    $('#methods').prop('checked', true);
+  }).on('hide.bs.password', function(e) {
+    $('#eventLog').text('On hide event');
+    $('#methods').prop('checked', false);
+  });
+
+  $('#claveEmail').password().on('show.bs.password', function(e) {
+    $('#eventLog').text('On show event');
+    $('#methods').prop('checked', true);
+  }).on('hide.bs.password', function(e) {
+    $('#eventLog').text('On hide event');
+    $('#methods').prop('checked', false);
+  });
+
+  $('#rootwizard').bootstrapWizard();
+
+});
+</script>

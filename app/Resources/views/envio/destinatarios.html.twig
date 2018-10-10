@@ -1,0 +1,133 @@
+<style>
+    .imagen{cursor:pointer;}
+</style>
+<div class="modal fade" id="modalLg" role="dialog">
+    <div class="modal-dialog modal-lg modalProveedores">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="idTituloModalProveedores"></h4>
+        </div>
+        <div class="modal-body" id="idBodyModalProveedores">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<div class="modal fade" id="modalLgAsociados" role="dialog">
+    <div class="modal-dialog modal-lg modalAsociados">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="idTituloModalAsociados"></h4>
+        </div>
+        <div class="modal-body" id="idBodyModalAsociados">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Proveedores</a></li>
+    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Asociados</a></li>
+  </ul>
+
+<div id="myTabContent" class="tab-content">
+    <div id="home" class="tab-pane fade active in" aria-labelledby="home-tab" role="tabpanel">
+    
+        {% include 'envio/proveedores.js.twig' ignore missing %}
+        <table id="GrillaProveedores"></table>
+        <div id="pGrillaProveedores"></div>
+        
+        
+        
+    </div>
+
+    <div id="profile" class="tab-pane fade" aria-labelledby="profile-tab" role="tabpanel">
+    
+        {% include 'envio/asociados.js.twig' ignore missing %}
+        <table id="GrillaAsociados"></table>
+        <div id="pGrillaAsociados"></div>
+        
+        {#<div class="modal fade" id="modalLgAsociados" role="dialog">
+            <div class="modal-dialog modal-lg modalAsociados">
+              <div class="modal-content">
+                <div class="modal-header text-center">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title" id="idTituloModalAsociados"></h4>
+                </div>
+                <div class="modal-body" id="idBodyModalAsociados">
+
+                </div>
+              </div>
+            </div>
+          </div>#}
+        
+    </div>
+
+    
+</div>
+
+{#<div id="tabs" class="tabs">
+    <ul>
+        <li><a href="#tab-1">Proveedores</a></li>
+        <li><a href="#tab-2">Asociados</a></li>
+    </ul>
+    <div class="tabscontent">
+        <div id="tab-1">
+            <div class="content">
+                {% include 'WABackendBundle:Envio:proveedores.js.twig' %}
+                <table id="GrillaProveedores"></table>
+                <div id="pGrillaProveedores"></div>
+                <div id="dialogProveedores"></div>
+            </div>
+        </div>
+        <div id="tab-2">
+            <div class="content">
+                {% include 'WABackendBundle:Envio:asociados.js.twig' %}
+                <table id="GrillaAsociados"></table>
+                <div id="pGrillaAsociados"></div>
+                <div id="dialogAsociados"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dialogDestinatarios"></div>
+#}
+<script>
+    $(document).ready(function() {
+        /*$('#tabs .tabscontent>div').not('div:first').hide();
+        $('#tabs ul li:first,#tabs .tabscontent>div:first').addClass('active');
+        $('#tabs ul li a').click(function(){
+            var currentTab = $(this).parent();
+            if(!currentTab.hasClass('active')){
+                $('#tabs ul li').removeClass('active');				
+                $('#tabs .tabscontent>div').slideUp('fast').removeClass('active');
+                var currentcontent = $($(this).attr('href'));
+                currentcontent.slideDown('fast', function() {
+                    currentTab.addClass('active');
+                    currentcontent.addClass('active');
+                });
+            }
+            return false;							
+        });
+        $('#dialogDestinatarios').dialog({autoOpen:false,modal:true});*/
+    });
+    function reloadGrid(identificador){
+        $(identificador).trigger("reloadGrid");
+    }
+    function ConsultaActualGrillas(identificadorGrilla){
+        var pd =$(identificadorGrilla).getGridParam("postData");
+        var r="";
+        var control=0;
+        $.each(pd,function(i){
+            if(control>0)r+="&";
+            r+=i+"="+pd[i];control++;
+        });
+        return r;
+    }
+    
+</script>

@@ -1,0 +1,7 @@
+cliente:
+    path:     /
+    defaults: { _controller: WABackendBundle:Cliente:index }
+    
+cliente_xml:
+    path:    /xml
+    defaults: { _controller: WABackendBundle:Cliente:xml}

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rows>
+    <page>{{ pagina }}</page>
+    <total>{{ maxPagina }}</total>
+    <records>{{ numRegistros }}</records>
+    {% for entity in entities %}
+    <row id="{{ entity.id }}">
+        <cell><![CDATA[<i class="selectAsociado fa {% if entity.asignado %}fa-check text-success{% else %}fa-exclamation-circle text-warning{% endif %}" aria-hidden="true" id="asignarAsociado_{{ entity.id }}"></i> ]]></cell>
+        <cell><![CDATA[{{ entity.depto | raw }}]]></cell>
+        <cell><![CDATA[{{ entity.ciudad |capitalize }}]]></cell>
+        <cell>{{ entity.centro }}</cell>
+        <cell>{{ entity.codigo }}</cell>
+        <cell>{{ entity.ruta }}</cell>
+        <cell><![CDATA[{%if tipoGrupo!=1%}{{ entity.drogueria|capitalize }}{%else%}{{ entity.asociado|capitalize }}{%endif%}]]></cell>
+        <cell>{{ entity.nit }}</cell>
+        <cell><![CDATA[{%if tipoGrupo!=1%}{{ entity.email }}{%else%}{{ entity.emailAsociado }}{%endif%}]]></cell>
+    </row>
+    {% endfor %}
+</rows>
+
+        

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Copirrogas ::>> Correos{% endblock %}</title>
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('/css/bootstrapWa.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('font-awesome/css/font-awesome.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('/css/noty/animate.css') }}" />
+            <link type="text/css" rel="stylesheet" href="{{ asset('css/drogueria.css') }}" />
+            <link type="text/css" rel="stylesheet" href="{{ asset('css/boostrapSelect/bootstrap-select.min.css') }}" />
+        {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body style="margin:0,15px,0,10px;">
+        {% block javascripts %}
+            <script language="javascript">if(history.forward(1)){history.replace(history.forward(1));}</script>
+            <script src="{{ asset('/js/jqgrid/jquery-1.11.0.min.js') }}"></script>
+            <script src="{{ asset('/js/bootstrap.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('/js/noty/jquery.noty.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('/js/noty/themes/default.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('/js/noty/layouts/center.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('/js/boostrapSelect/bootstrap-select.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('/js/globales.js') }}"></script>
+            <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+            <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+            <script type="text/javascript">
+                $('#modal').on('hidden.bs.modal', function (e) {
+                    $(".modal-dialog").animate({"width":'auto'},600,'linear');
+                });      
+            </script>
+        {% endblock %}
+        {% block body %}{% endblock %}
+        <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+          <div class="modal-dialog tamanio">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="tituloModal"></h4>
+              </div>
+              <div class="modal-body">
+                <p id="contenidoModal"></p>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </body>
+</html>

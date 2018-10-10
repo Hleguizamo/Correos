@@ -1,0 +1,132 @@
+{% extends '::base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/jqgrid/ui.jqgrid-bootstrap.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/bootstrap-switch.min.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/fileinput.min.css') }}" />
+    <style>
+        .imagen{cursor:pointer;}
+    </style>
+{% endblock stylesheets %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/jqgrid/jquery.jqGrid.min.js') }}"></script>
+  <script src="{{ asset('js/jqgrid/i18n/grid.locale-es.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/bootstrap-wizard/jquery.bootstrap.wizard.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('ckeditor/ckeditor.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/bootstrap-switch.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/bootstrap-wizard/jquery.bootstrap.wizard.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/fileinput.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/es.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/fa.js') }}"></script>
+{% endblock javascripts %}
+{% block body %}
+    {% include 'menu.html.twig' ignore missing %}
+    <ol class="breadcrumb">
+      <li><a href="{{path('envio')}}">Envios</a></li>
+      <li class="active">Destinatarios del Envio [{{entity.asunto | upper}}]</li>
+    </ol>
+  
+    <div class="modal fade" id="modalLg" role="dialog">
+        <div class="modal-dialog modal-lg modalProveedores">
+          <div class="modal-content">
+            <div class="modal-header text-center">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" id="idTituloModalProveedores"></h4>
+            </div>
+            <div class="modal-body" id="idBodyModalProveedores">
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    <div class="modal fade" id="modalLgAsociados" role="dialog">
+        <div class="modal-dialog modal-lg modalAsociados">
+          <div class="modal-content">
+            <div class="modal-header text-center">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" id="idTituloModalAsociados"></h4>
+            </div>
+            <div class="modal-body" id="idBodyModalAsociados">
+
+            </div>
+          </div>
+        </div>
+      </div>
+  
+  
+    <div>
+        <ul class="nav nav-tabs" role="tablist">
+          {% if proveedor %}
+            <li id="proveedorli" role="presentation"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Proveedores</a></li>
+          {% endif %}
+          {% if asociado %}
+            <li id="asociadoli" role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Asociados</a></li>
+          {% endif %}
+          </ul>
+
+        <div id="myTabContent" class="tab-content">
+          {% if proveedor %}
+            <div id="home" class="tab-pane fade" aria-labelledby="home-tab" role="tabpanel">
+
+                {% include 'envio/proveedores.js.twig' ignore missing %}
+                <table id="GrillaProveedores"></table>
+                <div id="pGrillaProveedores"></div>
+
+                {#<div class="modal fade" id="modalLg" role="dialog">
+                    <div class="modal-dialog modal-lg modalProveedores">
+                      <div class="modal-content">
+                        <div class="modal-header text-center">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title" id="idTituloModalProveedores"></h4>
+                        </div>
+                        <div class="modal-body" id="idBodyModalProveedores">
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>#}
+
+            </div>
+          {% endif %}
+          {% if asociado %}
+            <div id="profile" class="tab-pane fade" aria-labelledby="profile-tab" role="tabpanel">
+
+                {% include 'envio/asociados.js.twig' ignore missing %}
+                <table id="GrillaAsociados"></table>
+                <div id="pGrillaAsociados"></div>
+
+            </div>
+          {% endif %}
+
+        </div>
+    </div>
+<script>
+    $(document).ready(function() {
+      {% if proveedor %}
+        $('#proveedorli').addClass('active');
+        $('#home').addClass(' active in ');
+      {% endif %}
+      {% if asociado %}
+        $('#asociadoli').addClass('active');
+        $('#profile').addClass(' active in ');
+      {% endif %}
+    });
+    function reloadGrid(identificador){
+        $(identificador).trigger("reloadGrid");
+    }
+    function ConsultaActualGrillas(identificadorGrilla){
+        var pd =$(identificadorGrilla).getGridParam("postData");
+        var r="";
+        var control=0;
+        $.each(pd,function(i){
+            if(control>0)r+="&";
+            r+=i+"="+pd[i];control++;
+        });
+        return r;
+    }
+    
+</script>
+{% endblock %}

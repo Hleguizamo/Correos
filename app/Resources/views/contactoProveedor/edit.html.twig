@@ -1,0 +1,94 @@
+{% if form_errors(form)%}
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 text-danger">
+            {{ form_errors(form) }}
+        </div>
+    </div>
+{% endif %}
+<form id="formProveedor" class="form-horizontal" method="POST">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_label(form.idProveedor) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_label(form.nombreContacto) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_widget(form.idProveedor ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_widget(form.nombreContacto ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_label(form.ciudad) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_label(form.email) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_widget(form.ciudad ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_widget(form.email ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_label(form.telefono) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_label(form.movil) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_widget(form.telefono ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_widget(form.movil ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_label(form.idCargo) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_label(form.idArea) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_widget(form.idCargo ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            {{ form_widget(form.idArea ,{"attr":{"class":"form-control  input-sm"}} ) }}
+        </div>
+    </div>
+    {{ form_rest(form) }}
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#formProveedor').submit(function(){
+        noty({layout:'center',text:'<strong>Procesando, por favor espere...</strong><br><center><i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i></center>',modal:true,type:'alert',timeout:false,closeWith:['none']});  
+        
+        $.ajax({
+            type: "POST",
+            url: '{{ path('contactoProveedor_editar',{id:contactoProveedor.id}) }}',
+            data: $('#formProveedor').serialize(),
+            success: function(data){
+                if (data.status==1) {
+                    $('#modal').modal('toggle');
+                    jQuery("#grilla").trigger("reloadGrid");
+                }else{
+                    $('#contenidoModal').html(data);
+                }
+                $.noty.closeAll();
+                
+            }
+        });
+        return false;
+    });
+    $('.form-control').blur(function(){if($(this).is('[type=text]')){$(this).val($(this).val().toUpperCase());}});
+    $('.selectpicker').selectpicker({
+      style: 'btn-info',
+      size: 4
+    });
+});
+</script>

@@ -1,0 +1,31 @@
+wa_backend_envio:
+    resource: "@WABackendBundle/Controller/EnvioController.php"
+    type:     annotation
+
+#wa_backend_grupo:
+#    resource: "@WABackendBundle/Controller/GrupoController.php"
+#    type:     annotation
+    
+wa_backend_proveedor:
+    resource: "@WABackendBundle/Controller/ProveedorController.php"
+    type:     annotation
+
+wa_backend_cliente:
+    resource: "@WABackendBundle/Controller/ClienteController.php"
+    type:     annotation
+
+correos_administrador:
+    prefix: /administrador
+    resource: "@WABackendBundle/Resources/config/routing.yml"
+
+
+index:
+    path:  /
+    defaults: { _controller: "WABackendBundle:Default:login" }
+
+administrador:
+    resource: "@WABackendBundle/Resources/config/routing.yml"
+    prefix:   /administrador
+    
+fos_js_routing:
+    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"

@@ -1,0 +1,39 @@
+{% extends '::base.html.twig' %}
+{% block stylesheets %}
+{{ parent() }}
+  <link rel="stylesheet" href="{{ asset('css/jqgrid/ui.jqgrid-bootstrap.css') }}" />
+{% endblock %}
+{% block body %}
+{% include 'menu.html.twig' ignore missing %}
+
+  <table id="grilla"></table>
+  <div id="pGrilla"></div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content" id="modalContent">
+        <div class="modal-header">
+          <h4 class="modal-title bg-primary text-center"  id='idTituloModal'></h4>
+        </div>
+        <div class="modal-body" id="idBodyModal"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ asset('js/jqgrid/jquery.jqGrid.min.js') }}"></script>
+  <script src="{{ asset('js/jqgrid/i18n/grid.locale-es.js') }}"></script>
+
+  {% if permiso['cliente'] is defined %}
+    {% include 'cliente/index.js.twig' ignore missing %}
+  {% endif %}
+
+{% endblock %}

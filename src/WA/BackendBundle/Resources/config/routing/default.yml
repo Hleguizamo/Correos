@@ -1,0 +1,14 @@
+default:
+    path:  /
+    defaults: { _controller: "WABackendBundle:Default:index" }
+default_login_error:
+    path:  /loginError
+    defaults: { _controller: "WABackendBundle:Default:loginError" }
+default_login:
+    path:  /login
+    defaults: { _controller: "WABackendBundle:Default:login" }
+login_check:
+    path: /login_check
+default_logout:
+    path: /logout
+    defaults: { _controller: "WABackendBundle:Default:logout" }
